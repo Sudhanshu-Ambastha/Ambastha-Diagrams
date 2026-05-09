@@ -1,0 +1,66 @@
+{
+  "name": "ambastha-diagram",
+  "displayName": "Ambastha Diagram",
+  "version": "0.1.0",
+  "description": "High-performance, deterministic diagram engine using .abd syntax.",
+  "publisher": "Ambastha",
+  "type": "module",
+  "main": "./core/index.js",
+  "engines": {
+    "node": ">=18",
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization",
+    "Other"
+  ],
+  "exports": {
+    ".": "./core/index.js",
+    "./registry": "./registry/register.js"
+  },
+  "activationEvents": [
+    "onLanguage:ambastha-diagram"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "ambastha-diagram",
+        "aliases": [
+          "Ambastha Diagram",
+          "ABD"
+        ],
+        "extensions": [
+          ".abd"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "ambastha-icons",
+        "label": "Ambastha Icon Theme",
+        "path": "./file-icons.json"
+      }
+    ]
+  },
+  "scripts": {
+    "start": "npx serve .",
+    "editor": "npx serve editor",
+    "dev": "npx serve .",
+    "clean": "rm -rf node_modules package-lock.json",
+    "reset": "rm -rf node_modules package-lock.json && npm install"
+  },
+  "keywords": [
+    "ambastha",
+    "abd",
+    "diagram",
+    "svg",
+    "renderer",
+    "deterministic",
+    "cpm",
+    "kanban"
+  ],
+  "author": "Ambastha",
+  "license": "Apache-2.0"
+}
