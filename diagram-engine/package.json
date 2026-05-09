@@ -1,0 +1,57 @@
+{
+  "name": "ambastha-engine",
+  "version": "1.0.1",
+  "description": "Core parsing, layout, and visualization engine for Ambastha Diagrams",
+  "keywords": [
+    "diagram",
+    "svg",
+    "flowchart",
+    "sequence",
+    "gantt",
+    "mermaid-alternative",
+    "zero-dependency",
+    "headless",
+    "vscode-web"
+  ],
+  "author": "Sudhanshu Ambastha",
+  "license": "Apache-2.0",
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "import": "./core/index.js",
+      "default": "./core/index.js"
+    },
+    "./examples": {
+      "import": "./registry/examples.json",
+      "require": "./registry/examples.json",
+      "default": "./registry/examples.json"
+    },
+    "./syntax": {
+      "default": "./syntax/abd.tmLanguage.json"
+    }
+  },
+  "main": "./core/index.js",
+  "module": "./core/index.js",
+  "files": [
+    "core/",
+    "registry/",
+    "syntax/",
+    "README.md",
+    "NOTICE",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sudhanshu-Ambastha/Ambastha-Diagrams"
+  },
+  "bugs": {
+    "url": "https://github.com/Sudhanshu-Ambastha/Ambastha-Diagrams/issues"
+  },
+  "homepage": "https://github.com/Sudhanshu-Ambastha/Ambastha-Diagrams#readme"
+}

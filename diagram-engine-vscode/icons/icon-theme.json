@@ -1,0 +1,11 @@
+{
+  "iconDefinitions": {
+    "_abd": {
+      "iconPath": "./logo.svg"
+    }
+  },
+  "fileExtensions": {
+    "abd": "_abd"
+  },
+  "file": "_abd"
+}

@@ -1,0 +1,14 @@
+.vscode/**
+.vscode-test/**
+test/**
+src/**
+node_modules/**
+webpack.config.js
+.gitignore
+.gitattributes
+*.sh
+*.map
+vsc-extension-quickstart.md
+package-lock.json
+**/*.map
+images/*.gif

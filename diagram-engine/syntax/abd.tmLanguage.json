@@ -1,0 +1,174 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Ambastha Diagram Language",
+  "scopeName": "source.abd",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#diagram-type-line" },
+    { "include": "#property-lines" },
+    { "include": "#structure-keywords" },
+    { "include": "#relationship-keywords" },
+    { "include": "#arrows" },
+    { "include": "#identifiers-with-parens" },
+    { "include": "#standalone-identifiers" },
+    { "include": "#brackets" },
+    { "include": "#numbers" },
+    { "include": "#strings" },
+    { "include": "#separators" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.abd",
+          "match": "//.*$"
+        }
+      ]
+    },
+
+    "diagram-type-line": {
+      "patterns": [
+        {
+          "name": "keyword.control.abd",
+          "match": "^\\s*(flowchart|sequence|class|cpm|pert|gantt|kanban|usecase)\\s*$"
+        }
+      ]
+    },
+
+    "property-lines": {
+      "patterns": [
+        {
+          "comment": "Matches flowchart settings and node formatting declarations both inline or root block",
+          "match": "\\b(theme|fontTheme|ss|shape|fill|stroke|textColor|fontSize|fontWeight|type|activity|duration|predecessor|optimistic|likely|pessimistic|title|dateformat|view|startdate|firstdayofweek|progress|color|customstart|milestonedate|milestonedeps|milestonecolor|section|status)\\s*(:)",
+          "captures": {
+            "1": { "name": "entity.name.tag.abd" },
+            "2": { "name": "punctuation.separator.key-value.abd" }
+          }
+        }
+      ]
+    },
+
+    "structure-keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.flow.abd",
+          "match": "(?i)\\b(struct|group|loop|alt|else|opt|note|left of|right of|actor|participant|startstop|io|decision|process|external|system|milestone|in|as|over|service)\\b"
+        }
+      ]
+    },
+
+    "relationship-keywords": {
+      "patterns": [
+        {
+          "name": "storage.type.abd",
+          "match": "(?i)\\b(inherits|composition|dependency|include)\\s*:"
+        }
+      ]
+    },
+
+    "arrows": {
+      "comment": "keyword.operator = purple in Dark+, One Dark Pro, Dracula, Tokyo Night",
+      "patterns": [
+        {
+          "name": "keyword.operator.arrow.abd",
+          "match": "(-->|->|->>|-->>|->x)"
+        },
+        {
+          "comment": "double-dash connector between node direction suffixes: A:L -- B:R",
+          "name": "keyword.operator.connector.abd",
+          "match": "(?<=[a-zA-Z0-9\\])])\\s*(--+)\\s*(?=[a-zA-Z])"
+        },
+        {
+          "comment": "direction suffixes :T :L :R :B",
+          "name": "keyword.operator.direction.abd",
+          "match": "(?<=[a-zA-Z0-9_]):(T|L|R|B)\\b"
+        }
+      ]
+    },
+
+    "identifiers-with-parens": {
+      "comment": "node(icon)[Label] patterns",
+      "patterns": [
+        {
+          "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*(\\()([^)]*)(\\))\\s*(\\[)([^\\]]*)(\\])",
+          "captures": {
+            "1": { "name": "variable.other.abd" },
+            "2": { "name": "punctuation.definition.parameters.begin.abd" },
+            "3": { "name": "support.class.abd" },
+            "4": { "name": "punctuation.definition.parameters.end.abd" },
+            "5": { "name": "punctuation.definition.bracket.begin.abd" },
+            "6": { "name": "string.other.label.abd" },
+            "7": { "name": "punctuation.definition.bracket.end.abd" }
+          }
+        },
+        {
+          "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*(\\[)([^\\]]*)(\\])",
+          "captures": {
+            "1": { "name": "variable.other.abd" },
+            "2": { "name": "punctuation.definition.bracket.begin.abd" },
+            "3": { "name": "string.other.label.abd" },
+            "4": { "name": "punctuation.definition.bracket.end.abd" }
+          }
+        }
+      ]
+    },
+
+    "standalone-identifiers": {
+      "comment": "Node references: A B C (uppercase) and db disk1 api (lowercase). variable.other = blue in Dark+",
+      "patterns": [
+        {
+          "comment": "Single uppercase letter node refs: A, B, C",
+          "name": "variable.other.constant.abd",
+          "match": "(?<![a-zA-Z0-9_])\\b([A-Z])\\b(?![a-zA-Z0-9_])"
+        },
+        {
+          "comment": "Lowercase node refs that are NOT followed by : or ( — avoids matching property keys or function calls",
+          "name": "variable.other.abd",
+          "match": "(?<![a-zA-Z0-9_])\\b([a-z][a-zA-Z0-9_]*)\\b(?!\\s*[:(])"
+        }
+      ]
+    },
+
+    "brackets": {
+      "patterns": [
+        { "name": "punctuation.section.block.begin.abd", "match": "\\{" },
+        { "name": "punctuation.section.block.end.abd", "match": "\\}" }
+      ]
+    },
+
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.abd",
+          "match": "\\b[0-9]+(\\.[0-9]+)?\\b"
+        }
+      ]
+    },
+
+    "strings": {
+      "name": "string.quoted.double.abd",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "name": "constant.character.escape.abd", "match": "\\\\." }
+      ]
+    },
+
+    "separators": {
+      "patterns": [
+        {
+          "name": "punctuation.separator.comma.abd",
+          "match": ","
+        },
+        {
+          "name": "constant.language.abd",
+          "match": "(?<=:\\s*)_(?=\\s*[,;]|\\s*$)"
+        },
+        {
+          "name": "keyword.operator.access.abd",
+          "match": "(?<=^\\s{4,})[+\\-](?=[a-zA-Z])"
+        }
+      ]
+    }
+  }
+}

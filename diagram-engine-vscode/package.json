@@ -1,0 +1,64 @@
+{
+  "name": "ambastha-diagrams",
+  "displayName": "Ambastha Diagrams",
+  "publisher": "SudhanshuAmbastha",
+  "version": "1.0.2",
+  "description": "Diagram previewer for .abd files.",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sudhanshu-Ambastha/Ambastha-Diagrams"
+  },
+  "homepage": "https://github.com/Sudhanshu-Ambastha/Ambastha-Diagrams#readme",
+  "bugs": {
+    "url": "https://github.com/Sudhanshu-Ambastha/Ambastha-Diagrams/issues"
+  },
+  "main": "./dist/desktop/extension.js",
+  "browser": "./dist/web/extension.js",
+  "categories": [
+    "Visualization"
+  ],
+  "icon": "icons/logo.png",
+  "activationEvents": [
+    "onLanguage:abd"
+  ],
+  "scripts": {
+    "build": "webpack --mode production"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "abd",
+        "aliases": [
+          "Ambastha Diagram",
+          "abd"
+        ],
+        "extensions": [
+          ".abd"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/logo.svg",
+          "dark": "./icons/logo.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "abd",
+        "scopeName": "source.abd",
+        "path": "./dist/syntax/abd.tmLanguage.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^14.0.0",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.2"
+  },
+  "dependencies": {
+    "ambastha-engine": "^1.0.1"
+  }
+}

@@ -1,0 +1,94 @@
+/*
+ * style.css
+ * Description: Part of the Sovereign Diagram Engine core logic.
+ *
+ * Copyright 2026 Sudhanshu Ambastha
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
+body {
+  margin: 0;
+  display: flex;
+  height: 100vh;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f1f5f9;
+}
+
+.sidebar {
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-right: 1px solid #e2e8f0;
+  padding: 20px;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.03);
+}
+
+label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #6366f1;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+select {
+  padding: 10px;
+  margin-bottom: 24px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+textarea {
+  flex-grow: 1;
+  padding: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  resize: none;
+  font-family: "Fira Code", "Cascadia Code", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #1e293b;
+  transition: all 0.2s ease;
+}
+
+textarea:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
+}
+
+.canvas {
+  flex-grow: 1;
+  overflow: auto;
+  padding: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.error-box {
+  background: #fff1f2;
+  border: 1px solid #fda4af;
+  color: #9f1239;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 500px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}

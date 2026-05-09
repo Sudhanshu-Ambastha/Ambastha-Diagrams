@@ -1,0 +1,75 @@
+<!-- index.html
+Description: Part of the Sovereign Diagram Engine core logic.
+
+Copyright 2026 Sudhanshu Ambastha
+ 
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ambastha Diagram Editor</title>
+    <link rel="icon" type="image/svg+xml" href="../../resources/logo.png" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <input
+      type="color"
+      id="colorPicker"
+      style="position: absolute; visibility: hidden; width: 0; height: 0"
+    />
+
+    <div class="sidebar">
+      <label for="exampleSelector">Templates & Examples</label>
+      <select id="exampleSelector">
+        <option value="">-- Load an Example --</option>
+      </select>
+
+      <label for="editor">Source Input (.abd)</label>
+      <textarea id="editor" spellcheck="false">
+flowchart
+theme: modernSaaS
+fontTheme: technical
+ss: true "Pipeline Start" "Pipeline Complete"
+
+def {
+  Start: "Git Push", shape: terminal, fill: "#1e1b4b", textColor: "#ffffff"
+  Build: "Compile Source", fontWeight: bold
+  Unit:  "Unit Tests", fontSize: xl, fill: success
+  Lint:  "Linter Run"
+  Sec:   "Security Scan", fill: "#fef08a", stroke: warning
+  Gate:  "All Pass?", shape: d, fill: warning, textColor: critical
+  Deploy: "Prod Deploy", shape: p, fill: success
+  Roll:   "Rollback Routine", fill: critical, textColor: "#ffffff"
+  Alert:  "Slack Notification", fontSize: sm
+}
+
+Start -> Build
+
+Build -> Unit, Lint, Sec
+
+Unit, Lint, Sec -> Gate
+
+Gate ? {
+  Yes: Deploy -> Alert
+  No:  Roll -failed-> Alert
+}
+      </textarea>
+    </div>
+
+    <div id="preview" class="canvas"></div>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <body>
+    <svg id="mySVG" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+      <circle
+        cx="100"
+        cy="100"
+        r="80"
+        fill="orange"
+        stroke="black"
+        stroke-width="4"
+      />
+      <text x="100" y="110" font-size="30" text-anchor="middle" fill="black">
+        Hi
+      </text>
+    </svg>
+
+    <button id="downloadBtn">Download as PNG</button>
+
+    <script>
+      function svgToPng(svgElement, callback) {
+        try {
+          // Serialize SVG to string
+          const serializer = new XMLSerializer();
+          let svgString = serializer.serializeToString(svgElement);
+
+          // Add XML declaration for better compatibility
+          svgString = '<?xml version="1.0" standalone="no"?>\r\n' + svgString;
+
+          // Create a Blob from the SVG string
+          const blob = new Blob([svgString], {
+            type: "image/svg+xml;charset=utf-8",
+          });
+          const url = URL.createObjectURL(blob);
+
+          // Create an image to load the SVG
+          const img = new Image();
+          img.onload = function () {
+            // Create a canvas with same size as SVG
+            const canvas = document.createElement("canvas");
+            canvas.width = svgElement.width.baseVal.value;
+            canvas.height = svgElement.height.baseVal.value;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+
+            // Export canvas to PNG
+            canvas.toBlob(function (blob) {
+              callback(blob);
+              URL.revokeObjectURL(url); // Clean up
+            }, "image/png");
+          };
+          img.onerror = function () {
+            console.error("Could not load SVG as image.");
+          };
+          img.src = url;
+        } catch (err) {
+          console.error("Error converting SVG to PNG:", err);
+        }
+      }
+
+      document
+        .getElementById("downloadBtn")
+        .addEventListener("click", function () {
+          const svgElement = document.getElementById("mySVG");
+          svgToPng(svgElement, function (pngBlob) {
+            // Create a download link
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(pngBlob);
+            link.download = "converted.png";
+            link.click();
+          });
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+*.mmd
+.vscode/
+.vscode-test-web/
+dist/
+node_modules/
+compress.sh
+token
+*.vsix
