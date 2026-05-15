@@ -1,0 +1,10 @@
+{
+  "iconDefinitions": {
+    "ambastha_file_icon": {
+      "iconPath": "./logo.svg"
+    }
+  },
+  "fileExtensions": {
+    "abd": "ambastha_file_icon"
+  }
+}

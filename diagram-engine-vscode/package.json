@@ -1,0 +1,66 @@
+{
+  "name": "ambastha-diagrams-vscode",
+  "displayName": "Ambastha Diagrams Live Previewer",
+  "version": "1.0.0",
+  "description": "Lightweight, cloud-native live preview engine for Ambastha Diagrams (.abd)",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Visualization"
+  ],
+  "browser": "./dist/web/extension.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch"
+  },
+  "keywords": [
+    "diagram",
+    "flowchart",
+    "aero",
+    "ambastha"
+  ],
+  "devDependencies": {
+    "webpack": "^5.106.2",
+    "webpack-cli": "^7.0.2"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "abd",
+        "aliases": [
+          "Ambastha Diagram",
+          "abd"
+        ],
+        "extensions": [
+          ".abd"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "diagramEngine.openPreview",
+        "title": "Open Diagram Preview",
+        "category": "Ambastha Diagrams",
+        "icon": "$(open-preview)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "diagramEngine.openPreview",
+          "when": "resourceExtname == .abd",
+          "group": "navigation"
+        }
+      ]
+    },
+    "iconThemes": [
+      {
+        "id": "ambastha-diagram-icons",
+        "label": "Ambastha Diagram Icons",
+        "path": "./icons/icon-theme.json"
+      }
+    ]
+  }
+}
