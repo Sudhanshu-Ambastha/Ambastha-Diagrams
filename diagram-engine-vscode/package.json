@@ -1,7 +1,7 @@
 {
   "name": "ambastha-diagrams-vscode",
   "displayName": "Ambastha Diagrams Live Previewer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Lightweight, cloud-native live preview engine for Ambastha Diagrams (.abd)",
   "engines": {
     "vscode": "^1.75.0"
@@ -17,8 +17,8 @@
   "keywords": [
     "diagram",
     "flowchart",
-    "aero",
-    "ambastha"
+    "ambastha",
+    "abd"
   ],
   "devDependencies": {
     "webpack": "^5.106.2",
@@ -41,9 +41,21 @@
     "commands": [
       {
         "command": "diagramEngine.openPreview",
-        "title": "Open Diagram Preview",
+        "title": "Ambastha Diagrams: Open Preview",
         "category": "Ambastha Diagrams",
         "icon": "$(open-preview)"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "diagramEngine.openPreview",
+        "key": "ctrl+shift+v",
+        "when": "resourceExtname == .abd"
+      },
+      {
+        "command": "diagramEngine.openPreview",
+        "key": "cmd+shift+v",
+        "when": "resourceExtname == .abd"
       }
     ],
     "menus": {
@@ -52,6 +64,12 @@
           "command": "diagramEngine.openPreview",
           "when": "resourceExtname == .abd",
           "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "diagramEngine.openPreview",
+          "when": "resourceExtname == .abd || editorLangId == abd"
         }
       ]
     },
