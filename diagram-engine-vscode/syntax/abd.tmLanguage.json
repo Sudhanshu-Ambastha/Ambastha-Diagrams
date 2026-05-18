@@ -1,0 +1,83 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Ambastha Diagram Language",
+  "scopeName": "source.abd",
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#diagram-types"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#operators"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.abd",
+          "match": "//.*$"
+        }
+      ]
+    },
+    "diagram-types": {
+      "patterns": [
+        {
+          "name": "keyword.control.diagram.abd",
+          "match": "(?i)\\b(flowchart|usecase|class|struct|cpm|pert|sequence|gantt|kanban)\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.other.node-type.abd",
+          "match": "(?i)\\b(startstop|io|decision|process|actor|external|system|usecase|participant|loop|alt|else|opt|note|left of|right of|group|activity|milestone)\\b"
+        },
+        {
+          "name": "variable.language.property.abd",
+          "match": "(?i)\\b(as|type|duration|predecessor|optimistic|likely|pessimistic|title|dateformat|view|startdate|firstdayofweek|progress|color|customstart|milestonedate|milestonedeps|milestonecolor)\\b"
+        },
+        {
+          "name": "support.type.relationship.abd",
+          "match": "(?i)\\b(inherits:|composition:|dependency:|include:)\\b"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.abd",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.abd",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.arrow.abd",
+          "match": "(-->|->|-->>|->>|->x)"
+        },
+        {
+          "name": "constant.numeric.hex.abd",
+          "match": "#[0-9a-fA-F]{6}\\b"
+        },
+        {
+          "name": "punctuation.section.heading.abd",
+          "match": "==[^=]+=="
+        }
+      ]
+    }
+  }
+}

@@ -2,6 +2,7 @@ const path = require("path");
 
 module.exports = [
   {
+    name: "extension",
     entry: "./src/web/extension.js",
     output: {
       filename: "extension.js",
@@ -10,24 +11,36 @@ module.exports = [
     },
     target: "webworker",
     externals: { vscode: "commonjs vscode" },
-    mode: "none",
     resolve: {
-      extensions: [".js"],
-      fallback: { path: false, fs: false },
+      mainFields: ["browser", "module", "main"],
+      extensions: [".js", ".json"],
+      fallback: { fs: false, path: false },
     },
+    performance: { hints: false },
+    devtool: false,
+    mode: "production",
   },
   {
-    entry: "../diagram-engine/core/index.js",
+    name: "engine",
+    entry: "./src/web/engine.js",
     output: {
       filename: "engine.js",
       path: path.resolve(__dirname, "dist", "web"),
-      library: { type: "module" },
+      // Use 'var' type: assigns to a var named DiagramEngine in global scope
+      // This avoids the TDZ issue with 'window' type when minified
+      library: {
+        name: "DiagramEngine",
+        type: "var",
+      },
     },
     target: "web",
-    experiments: { outputModule: true },
-    mode: "none",
     resolve: {
-      extensions: [".js"],
+      mainFields: ["browser", "module", "main"],
+      extensions: [".js", ".json"],
+      fallback: { fs: false, path: false },
     },
+    performance: { hints: false },
+    devtool: false,
+    mode: "production",
   },
 ];

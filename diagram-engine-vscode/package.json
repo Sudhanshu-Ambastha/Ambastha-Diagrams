@@ -1,8 +1,8 @@
 {
   "name": "ambastha-diagrams-vscode",
   "displayName": "Ambastha Diagrams Live Previewer",
-  "version": "1.1.0",
-  "description": "Lightweight, cloud-native live preview engine for Ambastha Diagrams (.abd)",
+  "version": "1.0.0",
+  "description": "Live preview engine for Ambastha Diagrams (.abd)",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -10,16 +10,15 @@
     "Visualization"
   ],
   "browser": "./dist/web/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onLanguage:abd",
+    "workspaceContains:**/*.abd"
+  ],
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack --mode development --watch"
   },
-  "keywords": [
-    "diagram",
-    "flowchart",
-    "ambastha",
-    "abd"
-  ],
   "devDependencies": {
     "webpack": "^5.106.2",
     "webpack-cli": "^7.0.2"
@@ -35,15 +34,35 @@
         "extensions": [
           ".abd"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/logo.svg",
+          "dark": "./icons/logo.svg"
+        }
       }
     ],
     "commands": [
       {
         "command": "diagramEngine.openPreview",
-        "title": "Ambastha Diagrams: Open Preview",
+        "title": "Open Preview",
         "category": "Ambastha Diagrams",
         "icon": "$(open-preview)"
+      },
+      {
+        "command": "diagramEngine.openPreviewToSide",
+        "title": "Open Preview to the Side",
+        "category": "Ambastha Diagrams",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "diagramEngine.exportSvg",
+        "title": "Export as SVG",
+        "category": "Ambastha Diagrams"
+      },
+      {
+        "command": "diagramEngine.exportPng",
+        "title": "Export as PNG",
+        "category": "Ambastha Diagrams"
       }
     ],
     "keybindings": [
@@ -61,7 +80,7 @@
     "menus": {
       "editor/title": [
         {
-          "command": "diagramEngine.openPreview",
+          "command": "diagramEngine.openPreviewToSide",
           "when": "resourceExtname == .abd",
           "group": "navigation"
         }
@@ -70,15 +89,27 @@
         {
           "command": "diagramEngine.openPreview",
           "when": "resourceExtname == .abd || editorLangId == abd"
+        },
+        {
+          "command": "diagramEngine.openPreviewToSide",
+          "when": "resourceExtname == .abd || editorLangId == abd"
+        },
+        {
+          "command": "diagramEngine.exportSvg",
+          "when": "resourceExtname == .abd || editorLangId == abd"
+        },
+        {
+          "command": "diagramEngine.exportPng",
+          "when": "resourceExtname == .abd || editorLangId == abd"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "diagramEngine.openPreview",
+          "when": "resourceExtname == .abd",
+          "group": "navigation"
         }
       ]
-    },
-    "iconThemes": [
-      {
-        "id": "ambastha-diagram-icons",
-        "label": "Ambastha Diagram Icons",
-        "path": "./icons/icon-theme.json"
-      }
-    ]
+    }
   }
 }
