@@ -10,6 +10,7 @@
     "Visualization"
   ],
   "browser": "./dist/web/extension.js",
+  "main": "./dist/desktop/extension.js",
   "activationEvents": [
     "onStartupFinished",
     "onLanguage:abd",
@@ -24,6 +25,13 @@
     "webpack-cli": "^7.0.2"
   },
   "contributes": {
+    "iconThemes": [
+      {
+        "id": "ambastha-icons",
+        "label": "Ambastha Icons",
+        "path": "./icons/icon-theme.json"
+      }
+    ],
     "languages": [
       {
         "id": "abd",
@@ -39,6 +47,13 @@
           "light": "./icons/logo.svg",
           "dark": "./icons/logo.svg"
         }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "abd",
+        "scopeName": "source.abd",
+        "path": "./syntax/abd.tmLanguage.json"
       }
     ],
     "commands": [

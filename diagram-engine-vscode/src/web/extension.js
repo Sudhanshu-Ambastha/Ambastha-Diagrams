@@ -1,6 +1,9 @@
 import * as vscode from "vscode";
 import { createDiagnosticEngine } from "./diagnostics.js";
-import { registerCompletionProvider } from "./completion.js";
+import {
+  registerCompletionProvider,
+  registerBlankFileWatcher,
+} from "./completion.js";
 import { PreviewPanel } from "./preview.js";
 
 function isAbdFile(doc) {
@@ -8,8 +11,9 @@ function isAbdFile(doc) {
 }
 
 export function activate(context) {
-  const updateDiagnostics = createDiagnosticEngine(context);
+  createDiagnosticEngine(context);
   context.subscriptions.push(registerCompletionProvider());
+  registerBlankFileWatcher(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand("diagramEngine.openPreview", () => {
@@ -38,7 +42,14 @@ export function activate(context) {
     }),
 
     vscode.workspace.onDidChangeTextDocument((e) => {
-      if (isAbdFile(e.document)) PreviewPanel.update(e.document);
+      if (isAbdFile(e.document)) {
+        PreviewPanel.update(e.document);
+        if (e.document.getText().trim() === "") {
+          setTimeout(() => {
+            vscode.commands.executeCommand("editor.action.triggerSuggest");
+          }, 200);
+        }
+      }
     }),
 
     vscode.window.onDidChangeActiveTextEditor((editor) => {

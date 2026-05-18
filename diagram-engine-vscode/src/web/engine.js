@@ -1,1 +1,0 @@
-export { renderDiagram } from "../../../diagram-engine/core/index.js";

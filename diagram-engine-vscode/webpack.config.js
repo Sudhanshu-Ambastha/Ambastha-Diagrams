@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = [
   {
-    name: "extension",
+    name: "extension-web",
     entry: "./src/web/extension.js",
     output: {
       filename: "extension.js",
@@ -20,14 +20,32 @@ module.exports = [
     devtool: false,
     mode: "production",
   },
+
+  {
+    name: "extension-desktop",
+    entry: "./src/web/extension.js",
+    output: {
+      filename: "extension.js",
+      path: path.resolve(__dirname, "dist", "desktop"),
+      libraryTarget: "commonjs2",
+    },
+    target: "node",
+    externals: { vscode: "commonjs vscode" },
+    resolve: {
+      mainFields: ["module", "main"],
+      extensions: [".js", ".json"],
+    },
+    performance: { hints: false },
+    devtool: false,
+    mode: "production",
+  },
+
   {
     name: "engine",
-    entry: "./src/web/engine.js",
+    entry: "../diagram-engine/core/index.js",
     output: {
       filename: "engine.js",
       path: path.resolve(__dirname, "dist", "web"),
-      // Use 'var' type: assigns to a var named DiagramEngine in global scope
-      // This avoids the TDZ issue with 'window' type when minified
       library: {
         name: "DiagramEngine",
         type: "var",

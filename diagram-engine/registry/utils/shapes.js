@@ -24,6 +24,7 @@ import { cpmTemplates } from "../diagrams/cpm/templates/cpmTemplates.js";
 import { ganttTemplates } from "../diagrams/gantt/templates/ganttTemplates.js";
 import { T as kanbanTemplates } from "../diagrams/kanban/templates/kanbanTemplates.js";
 import { classTemplates } from "../diagrams/class/templates/classTemplates.js";
+import { flowchartTemplates } from "../diagrams/flowchart/templates/flowchartTemplates.js";
 
 export const AbdShapes = {
   actor: (x, y, label, theme) => usecaseTemplates.actor(x, y, label, theme),
@@ -73,4 +74,17 @@ export const AbdShapes = {
   kanbanTicket: (x, y, w, h, data) => kanbanTemplates.ticket(x, y, w, h, data),
   kanbanColumn: (x, y, w, h, title, color, limit) =>
     kanbanTemplates.column(x, y, w, h, title, color, limit),
+
+  flowStartStop: (x, y, label, theme) =>
+    flowchartTemplates.startstop(x, y, label),
+
+  flowProcess: (x, y, label, theme) => flowchartTemplates.process(x, y, label),
+
+  flowDecision: (x, y, label, theme) =>
+    flowchartTemplates.decision(x, y, label),
+
+  flowIO: (x, y, label, theme) => flowchartTemplates.io(x, y, label),
+
+  flowLink: (x1, y1, x2, y2, label) =>
+    flowchartTemplates.connector(x1, y1, x2, y2, label),
 };
