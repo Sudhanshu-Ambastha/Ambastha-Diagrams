@@ -1,107 +1,166 @@
 import * as vscode from "vscode";
-import templates from "./examples.json";
+import bundledTemplates from "./examples.json";
 
-function buildDocumentation(key, template) {
-  const descriptions = {
-    flowchart: "Visualize processes and decision flows.",
-    sequence: "Show interactions between actors over time.",
-    class: "Model object-oriented class structures.",
-    gantt: "Plan and track project timelines.",
-    kanban: "Manage work items across status columns.",
-    usecase: "Describe system actors and their use cases.",
-    pert: "Estimate project schedules with uncertainty.",
-    cpm: "Find the critical path through a project network.",
-  };
+let _registry = null;
 
+async function loadRegistry(context) {
+  if (_registry) return _registry;
+  const config = vscode.workspace.getConfiguration("ambastha");
+  const remoteUrl = config.get("registryUrl");
+
+  if (remoteUrl) {
+    try {
+      const res = await fetch(remoteUrl, { signal: AbortSignal.timeout(5000) });
+      if (res.ok) {
+        const data = await res.json();
+        _registry = normalizeRegistry(data);
+        console.log("[ABD] Registry loaded from remote:", remoteUrl);
+        return _registry;
+      }
+    } catch (err) {
+      console.warn(
+        "[ABD] Remote registry fetch failed, using bundled:",
+        err.message,
+      );
+    }
+  }
+
+  _registry = normalizeRegistry(bundledTemplates);
+  console.log(
+    "[ABD] Registry loaded from bundle, diagrams:",
+    Object.keys(_registry),
+  );
+  return _registry;
+}
+
+function normalizeRegistry(raw) {
+  const out = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (typeof value === "string") {
+      out[key] = { template: value, description: "", category: "general" };
+    } else {
+      out[key] = {
+        template: value.template ?? "",
+        description: value.description ?? "",
+        category: value.category ?? "general",
+      };
+    }
+  }
+  return out;
+}
+
+let _cachedRegistry = null;
+
+export function registerCompletionProvider(context) {
+  loadRegistry(context).then((r) => {
+    _cachedRegistry = r;
+  });
+
+  return vscode.languages.registerCompletionItemProvider(
+    { language: "abd", scheme: "*" },
+    {
+      async provideCompletionItems(document, position) {
+        if (position.line !== 0) return new vscode.CompletionList([], false);
+
+        const registry = _cachedRegistry ?? (await loadRegistry(context));
+
+        const lineText = document
+          .lineAt(0)
+          .text.slice(0, position.character)
+          .trim()
+          .toLowerCase();
+
+        const keys = Object.keys(registry);
+        const matched =
+          lineText === "" ? keys : keys.filter((k) => k.startsWith(lineText));
+
+        if (matched.length === 0) return new vscode.CompletionList([], false);
+
+        const items = matched.map((key) => {
+          const entry = registry[key];
+
+          const item = new vscode.CompletionItem(
+            { label: "📊 " + key, description: "Ambastha Diagrams" },
+            vscode.CompletionItemKind.Keyword,
+          );
+
+          item.filterText = key;
+
+          item.insertText = new vscode.SnippetString(entry.template);
+          item.range = new vscode.Range(
+            new vscode.Position(0, 0),
+            new vscode.Position(0, document.lineAt(0).text.length),
+          );
+
+          item.detail = "Ambastha Diagrams · " + (entry.category ?? "");
+          item.sortText = "0_" + key;
+          item.preselect = matched.length === 1;
+          item.documentation = buildDoc(key, entry);
+          item.commitCharacters = [];
+
+          return item;
+        });
+
+        return new vscode.CompletionList(items, false);
+      },
+    },
+    "f",
+    "s",
+    "c",
+    "g",
+    "k",
+    "u",
+    "p",
+  );
+}
+
+function buildDoc(key, entry) {
   const md = new vscode.MarkdownString("", true);
   md.isTrusted = true;
   md.supportThemeIcons = true;
-
-  const desc = descriptions[key] ?? "Ambastha Diagram snippet.";
-  md.appendMarkdown(`**${key.toUpperCase()}** — ${desc}\n\n`);
-  md.appendCodeblock(template, "abd");
-
+  if (entry.description) {
+    md.appendMarkdown(
+      "**" + key.toUpperCase() + "** — " + entry.description + "\n\n",
+    );
+  }
+  if (entry.template) {
+    md.appendCodeblock(entry.template, "abd");
+  }
   return md;
 }
 
-function buildItems(isBlank) {
-  return Object.entries(templates).map(([key, template]) => {
-    const item = new vscode.CompletionItem(
-      `📊 ${key}`,
-      isBlank
-        ? vscode.CompletionItemKind.File
-        : vscode.CompletionItemKind.Snippet,
-    );
-
-    item.filterText = key;
-    item.detail = `Ambastha · ${key} diagram`;
-    item.sortText = isBlank ? `0_${key}` : `9_${key}`;
-    item.insertText = new vscode.SnippetString(template);
-    item.documentation = buildDocumentation(key, template);
-    item.commitCharacters = [];
-    item.keepWhitespace = false;
-
-    return item;
-  });
+function isAbdDoc(document) {
+  return (
+    document &&
+    (document.languageId === "abd" || document.fileName.endsWith(".abd"))
+  );
 }
 
-export function registerCompletionProvider() {
-  const provider = vscode.languages.registerCompletionItemProvider(
-    "abd",
-    {
-      provideCompletionItems(document, position) {
-        const isBlank = document.getText().trim() === "";
-        return buildItems(isBlank);
-      },
-    },
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-  );
+let _debounce = null;
 
-  return provider;
+function triggerInlineIfBlank(document) {
+  if (!isAbdDoc(document)) return;
+  if (document.getText().trim() !== "") return;
+  clearTimeout(_debounce);
+  _debounce = setTimeout(() => {
+    if (document.getText().trim() !== "") return;
+    vscode.commands.executeCommand("editor.action.triggerSuggest");
+  }, 400);
 }
 
 export function registerBlankFileWatcher(context) {
-  const triggerIfBlank = (document) => {
-    if (!document) return;
-    if (document.languageId !== "abd" && !document.fileName.endsWith(".abd"))
-      return;
-    if (document.getText().trim() !== "") return;
-
-    setTimeout(() => {
-      vscode.commands.executeCommand("editor.action.triggerSuggest");
-    }, 300);
-  };
-
   context.subscriptions.push(
-    vscode.workspace.onDidOpenTextDocument(triggerIfBlank),
+    vscode.workspace.onDidOpenTextDocument(triggerInlineIfBlank),
   );
-
   if (vscode.window.activeTextEditor) {
-    triggerIfBlank(vscode.window.activeTextEditor.document);
+    triggerInlineIfBlank(vscode.window.activeTextEditor.document);
   }
+}
+
+export function registerClearWatcher(context) {
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((e) => {
+      if (isAbdDoc(e.document)) triggerInlineIfBlank(e.document);
+    }),
+  );
 }

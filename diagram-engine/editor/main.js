@@ -64,14 +64,39 @@ async function init() {
 
     const examples = await response.json();
 
-    Object.entries(examples).forEach(([name, syntax]) => {
+    // Map to keep track of created optgroups by category name
+    const groups = {};
+
+    Object.entries(examples).forEach(([key, config]) => {
       const option = document.createElement("option");
-      option.value = syntax;
-      option.textContent = name.replace(/_/g, " ").toUpperCase();
-      selector.appendChild(option);
+
+      // Target the new nested .template schema field
+      option.value = config.template;
+      option.textContent = key.replace(/_/g, " ").toUpperCase();
+
+      // Use description string as context title hover on selection
+      if (config.description) {
+        option.title = config.description;
+      }
+
+      // Group elements inside HTML selector based on category type
+      if (config.category) {
+        const catName = config.category.toUpperCase();
+        if (!groups[catName]) {
+          groups[catName] = document.createElement("optgroup");
+          groups[catName].label = `${catName} DIAGRAMS`;
+          selector.appendChild(groups[catName]);
+        }
+        groups[catName].appendChild(option);
+      } else {
+        selector.appendChild(option);
+      }
     });
   } catch (err) {
-    console.warn("Using local defaults. Ensure registry/examples.json exists.");
+    console.warn(
+      "Using local defaults. Ensure registry/examples.json exists.",
+      err,
+    );
   }
   update();
 }

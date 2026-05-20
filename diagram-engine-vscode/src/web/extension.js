@@ -3,6 +3,7 @@ import { createDiagnosticEngine } from "./diagnostics.js";
 import {
   registerCompletionProvider,
   registerBlankFileWatcher,
+  registerClearWatcher,
 } from "./completion.js";
 import { PreviewPanel } from "./preview.js";
 
@@ -14,6 +15,7 @@ export function activate(context) {
   createDiagnosticEngine(context);
   context.subscriptions.push(registerCompletionProvider());
   registerBlankFileWatcher(context);
+  registerClearWatcher(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand("diagramEngine.openPreview", () => {
@@ -44,11 +46,6 @@ export function activate(context) {
     vscode.workspace.onDidChangeTextDocument((e) => {
       if (isAbdFile(e.document)) {
         PreviewPanel.update(e.document);
-        if (e.document.getText().trim() === "") {
-          setTimeout(() => {
-            vscode.commands.executeCommand("editor.action.triggerSuggest");
-          }, 200);
-        }
       }
     }),
 

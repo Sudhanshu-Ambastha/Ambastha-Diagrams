@@ -1,11 +1,47 @@
 {
-  "flowchart": "flowchart\n  startstop \"Start Process\" as A; \"Terminate Run\" as G\n  io \"Read Configuration File\" as B\n  decision \"Is Environment Valid?\" as C\n  process \"Initialize Aero Engine\" as D; \"Log System Specs\" as E; \"Throw Crash Dump\" as F\n\n  A --> B\n  B --> C\n  C --> D \"Yes\"\n  C --> F \"No\"\n  D --> E\n  E --> G\n  F --> G",
-  "usecase": "useCase\n  actor \"Customer\" as C\n  actor \"Technician\" as T\n  external \"Bank Server\" as S\n  system \"ATM System\" {\n    usecase \"Withdraw Cash\" as UC1\n    usecase \"Check Balance\" as UC2\n    usecase \"Login\" as UC3\n  }\n  C --> UC1; UC2\n  T --> UC3\n  include: UC1 --> UC3\n  dependency: UC1 --> S",
-  "class": "class\nstruct User {\n    +string id\n    +string email\n    -string password\n    +getSession()\n}\n\nstruct Customer {\n    +string name\n    +string billingAddress\n    +signUp()\n    +login()\n}\n\nstruct Order {\n    +string id\n    +date orderDate\n    +string status\n    +updateStatus()\n}\n\nstruct Logger {\n    +log()\n}\n\nstruct PaymentGateway {\n    +processPayment()\n    +refund()\n}\n\ninherits: Customer --> User\ncomposition: Order --> Customer\ndependency: Order --> Logger; Order --> PaymentGateway",
-  "cpm_aoa": "cpm\n  type:aoa\n  activity: A, B, C, D\n  duration: 10, 5, 8, 3\n  predecessor: _, A, A, B;C",
-  "cpm_aon": "cpm\n  type:aon\n  activity: A, B, C, D\n  duration: 10, 5, 8, 3\n  predecessor: _, A, A, B;C",
-  "pert_aoa": "pert\n  type:aoa\n  activity: 1-2, 2-3, 2-4, 3-5, 4-5\n  optimistic: 2, 5, 1, 3, 2\n  likely: 4, 7, 2, 4, 3\n  pessimistic: 6, 9, 3, 5, 4",
-  "sequence": "sequence\n  participant User as U\n  participant actor Server as S\n  participant Database as DB\n\n  U -> S: Sync call\n  S --> U: Reply\n  U ->> S: Async fire\n  S -->> U: Async reply\n  U ->x S: Destroy\n\n  loop Every 5 min\n  \n    U -> S: Heartbeat\n    S --> U: Pong\n  end\n\n  alt Happy path\n    S -> DB: Save\n  else Error path\n    S --> U: 500 Error\n  end\n\n  opt If logged in\n    U -> S: Get Profile\n  end\n\n  note left of U: User is waiting\n  note right of S, DB: Both involved",
-  "gantt_full_feature": "gantt\n  title: Full Feature Demo\n  dateFormat: YYYY-MM-DD\n  view: weeks\n  startDate: 2026-05-12\n  firstDayOfWeek: monday\n\n  group Sprint 1\n    activity: Design, Code, Test\n    duration: 5, 10, 5\n    predecessor: _, _, Code\n    progress: 100, 40, 0\n    color: #df0c0c, #0cdf24, _\n    customStart: _, _, _\n\n  group Sprint 2\n    activity: Review, Fix\n    duration: 3, 2\n    predecessor: Test, Review\n    progress: 0, 0\n    color: #8b5cf6, _\n\n  group Release\n    activity: Deploy, Docs\n    duration: 2, 4\n    predecessor: Fix, Fix\n    customStart: 2026-06-10, _\n\n  milestone: Beta Ready\n  milestoneDate: 2026-06-05\n  milestoneDeps: Test, Review\n  milestoneColor: #f59e0b\n\n  milestone: Ship It\n  milestoneDeps: Deploy, Docs\n  milestoneColor: #10b981",
-  "kanban_board": "kanban\n== Sprint 1: Initial Setup ==\nTodo (#ffe0b2):\n| Create Documentation | docs_01 | High | @user | 2026-05-20 |\n| Blog Post | blog_22 | Low | _ | 2026-05-22 |\n\nIn Progress:\n| SVG Renderer Fix | id6 | Very High | @dev_team | 2026-05-15 |\n\nDone (#c8e6c9):\n| Define getData | id5 | - | @intern | 2026-05-10 |\n\n== Sprint 2: Feature Expansion ==\nTodo:\n| Add PERT Engine | eng_05 | High | @dev_team | _ |"
+  "flowchart": {
+    "description": "Visualize processes and decision flows using a unified declaration and arrow syntax.",
+    "category": "flow",
+    "template": "flowchart\n  startstop \"Start Process\" as A; \"Terminate Run\" as G\n  io \"Read Configuration File\" as B\n  decision \"Is Environment Valid?\" as C\n  process \"Initialize Aero Engine\" as D; \"Log System Specs\" as E; \"Throw Crash Dump\" as F\n\n  A --> B\n  B --> C\n  C --> D \"Yes\"\n  C --> F \"No\"\n  D --> E\n  E --> G\n  F --> G"
+  },
+  "sequence": {
+    "description": "Show temporal interactions and synchronized/asynchronous message flows between actors over time.",
+    "category": "flow",
+    "template": "sequence\n  participant User as U\n  participant actor Server as S\n  participant Database as DB\n\n  U -> S: Sync call\n  S --> U: Reply\n  U ->> S: Async fire\n  S -->> U: Async reply\n  U ->x S: Destroy\n\n  loop Every 5 min\n    U -> S: Heartbeat\n    S --> U: Pong\n  end\n\n  alt Happy path\n    S -> DB: Save\n  else Error path\n    S --> U: 500 Error\n  end\n\n  opt If logged in\n    U -> S: Get Profile\n  end\n\n  note left of U: User is waiting\n  note right of S, DB: Both involved"
+  },
+  "class": {
+    "description": "Model object-oriented class structures using clean, C/C++ style native struct declarations.",
+    "category": "structure",
+    "template": "class\nstruct User {\n    +string id\n    +string email\n    -string password\n    +getSession()\n}\n\nstruct Customer {\n    +string name\n    +string billingAddress\n    +signUp()\n    +login()\n}\n\nstruct Order {\n    +string id\n    +date orderDate\n    +string status\n    +updateStatus()\n}\n\nstruct Logger {\n    +log()\n}\n\nstruct PaymentGateway {\n    +processPayment()\n    +refund()\n}\n\ninherits: Customer --> User\ncomposition: Order --> Customer\ndependency: Order --> Logger; Order --> PaymentGateway"
+  },
+  "usecase": {
+    "description": "Describe system scopes, external boundaries, and user interactions within system blocks.",
+    "category": "structure",
+    "template": "useCase\n  actor \"Customer\" as C\n  actor \"Technician\" as T\n  external \"Bank Server\" as S\n  system \"ATM System\" {\n    usecase \"Withdraw Cash\" as UC1\n    usecase \"Check Balance\" as UC2\n    usecase \"Login\" as UC3\n  }\n  C --> UC1; UC2\n  T --> UC3\n  include: UC1 --> UC3\n  dependency: UC1 --> S"
+  },
+  "cpm_aoa": {
+    "description": "Find the critical path through a project network using the Activity-on-Arrow (AOA) methodology.",
+    "category": "planning",
+    "template": "cpm\n  type:aoa\n  activity: A, B, C, D\n  duration: 10, 5, 8, 3\n  predecessor: _, A, A, B;C"
+  },
+  "cpm_aon": {
+    "description": "Find the critical path through a project network using the Activity-on-Node (AON) node layout methodology.",
+    "category": "planning",
+    "template": "cpm\n  type:aon\n  activity: A, B, C, D\n  duration: 10, 5, 8, 3\n  predecessor: _, A, A, B;C"
+  },
+  "pert_aoa": {
+    "description": "Estimate project network schedules with three-point uncertainty limits using Activity-on-Arrow (AOA).",
+    "category": "planning",
+    "template": "pert\n  type:aoa\n  activity: 1-2, 2-3, 2-4, 3-5, 4-5\n  optimistic: 2, 5, 1, 3, 2\n  likely: 4, 7, 2, 4, 3\n  pessimistic: 6, 9, 3, 5, 4"
+  },
+  "gantt_full_feature": {
+    "description": "Plan, schedule, and track sequential project task groupings, milestones, and development progress over time.",
+    "category": "planning",
+    "template": "gantt\n  title: Full Feature Demo\n  dateFormat: YYYY-MM-DD\n  view: weeks\n  startDate: 2026-05-12\n  firstDayOfWeek: monday\n\n  group Sprint 1\n    activity: Design, Code, Test\n    duration: 5, 10, 5\n    predecessor: _, _, Code\n    progress: 100, 40, 0\n    color: #df0c0c, #0cdf24, _\n    customStart: _, _, _\n\n  group Sprint 2\n    activity: Review, Fix\n    duration: 3, 2\n    predecessor: Test, Review\n    progress: 0, 0\n    color: #8b5cf6, _\n\n  group Release\n    activity: Deploy, Docs\n    duration: 2, 4\n    predecessor: Fix, Fix\n    customStart: 2026-06-10, _\n\n  milestone: Beta Ready\n  milestoneDate: 2026-06-05\n  milestoneDeps: Test, Review\n  milestoneColor: #f59e0b\n\n  milestone: Ship It\n  milestoneDeps: Deploy, Docs\n  milestoneColor: #10b981"
+  },
+  "kanban_board": {
+    "description": "Manage agile work items, metadata categories, assignments, and priorities across markdown-table status columns.",
+    "category": "planning",
+    "template": "kanban\n== Sprint 1: Initial Setup ==\nTodo (#ffe0b2):\n| Create Documentation | docs_01 | High | @user | 2026-05-20 |\n| Blog Post | blog_22 | Low | _ | 2026-05-22 |\n\nIn Progress:\n| SVG Renderer Fix | id6 | Very High | @dev_team | 2026-05-15 |\n\nDone (#c8e6c9):\n| Define getData | id5 | - | @intern | 2026-05-10 |\n\n== Sprint 2: Feature Expansion ==\nTodo:\n| Add PERT Engine | eng_05 | High | @dev_team | _ |"
+  }
 }

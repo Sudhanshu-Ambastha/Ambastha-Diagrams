@@ -1,66 +1,50 @@
 {
-  "name": "ambastha-diagram",
-  "displayName": "Ambastha Diagram",
-  "version": "0.1.0",
-  "description": "High-performance, deterministic diagram engine using .abd syntax.",
-  "publisher": "Ambastha",
-  "type": "module",
-  "main": "./core/index.js",
-  "engines": {
-    "node": ">=18",
-    "vscode": "^1.75.0"
-  },
-  "categories": [
-    "Programming Languages",
-    "Visualization",
-    "Other"
-  ],
-  "exports": {
-    ".": "./core/index.js",
-    "./registry": "./registry/register.js"
-  },
-  "activationEvents": [
-    "onLanguage:ambastha-diagram"
-  ],
-  "contributes": {
-    "languages": [
-      {
-        "id": "ambastha-diagram",
-        "aliases": [
-          "Ambastha Diagram",
-          "ABD"
-        ],
-        "extensions": [
-          ".abd"
-        ],
-        "configuration": "./language-configuration.json"
-      }
-    ],
-    "iconThemes": [
-      {
-        "id": "ambastha-icons",
-        "label": "Ambastha Icon Theme",
-        "path": "./file-icons.json"
-      }
-    ]
-  },
-  "scripts": {
-    "start": "npx serve .",
-    "editor": "npx serve editor",
-    "dev": "npx serve .",
-    "clean": "rm -rf node_modules package-lock.json",
-    "reset": "rm -rf node_modules package-lock.json && npm install"
-  },
+  "name": "diagram-engine",
+  "version": "1.0.0",
+  "description": "Zero-dependency SVG diagram renderer. Lightweight Mermaid alternative — 40x smaller, works in browsers, VS Code Web, and Node.js.",
   "keywords": [
-    "ambastha",
-    "abd",
     "diagram",
     "svg",
-    "renderer",
-    "deterministic",
-    "cpm",
-    "kanban"
+    "flowchart",
+    "sequence",
+    "gantt",
+    "mermaid-alternative",
+    "zero-dependency",
+    "headless",
+    "vscode-web"
   ],
   "author": "Ambastha",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./core/index.js"
+    },
+    "./registry": {
+      "import": "./registry/register.js"
+    },
+    "./examples": {
+      "import": "./registry/examples.json",
+      "default": "./registry/examples.json"
+    }
+  },
+  "main": "./core/index.js",
+  "module": "./core/index.js",
+  "files": [
+    "core/",
+    "registry/",
+    "README.md",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/diagram-engine"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/diagram-engine/issues"
+  },
+  "homepage": "https://github.com/yourusername/diagram-engine#readme"
 }
