@@ -62,8 +62,28 @@ export const AbdShapes = {
   useCase: (x, y, label, theme) => usecaseTemplates.useCase(x, y, label, theme),
   external: (x, y, label, theme) =>
     usecaseTemplates.externalSystem(x, y, label, theme),
-  pertNode: (event, pos, radius, theme) =>
-    pertTemplates.eventNode(event, pos, radius, theme),
+  pertNode: (event, pos, radius, theme) => {
+    if (event && event.duration !== undefined) {
+      const nodeW = 120;
+      const nodeH = 100;
+      return cpmTemplates.node(
+        pos.x - nodeW / 2,
+        pos.y - nodeH / 2,
+        {
+          id: event.id,
+          duration: event.duration,
+          es: event.es,
+          ef: event.ef,
+          ls: event.ls,
+          lf: event.lf,
+          slack: event.slack,
+          isCritical: event.isCritical,
+        },
+        theme,
+      );
+    }
+    return pertTemplates.eventNode(event, pos, radius, theme);
+  },
   pertActivity: (x1, y1, x2, y2, te, isCrit, midX, midY, theme) =>
     pertTemplates.activity(x1, y1, x2, y2, te, isCrit, midX, midY, theme),
   cpmNode: (x, y, data, theme) => cpmTemplates.node(x, y, data, theme),

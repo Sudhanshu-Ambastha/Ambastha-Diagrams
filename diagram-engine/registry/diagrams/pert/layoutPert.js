@@ -20,53 +20,51 @@
 export function layoutPert(model) {
   const positions = {};
   const levels = {};
-  const eventLevels = {};
+  const taskLevels = {};
 
-  const eventIds =
+  const isAON = model.type === "aon";
+  const nodeIds =
     typeof model.topologicalSort === "function"
       ? model.topologicalSort()
-      : Object.keys(model.events);
+      : Object.keys(isAON ? model.tasks : model.events);
 
-  eventIds.forEach((id) => {
-    const node = model.events[id];
-
+  nodeIds.forEach((id) => {
     let level = 0;
+    const currentItem = isAON ? model.tasks[id] : model.events[id];
 
-    if (node.predecessors.length > 0) {
-      level =
-        Math.max(
-          ...node.predecessors.map((pred) => (eventLevels[pred.from] ?? 0) + 1),
-        ) || 0;
+    if (
+      currentItem &&
+      currentItem.predecessors &&
+      currentItem.predecessors.length > 0
+    ) {
+      const validLevels = currentItem.predecessors.map((p) => {
+        const predId = isAON ? p : p.from;
+        return taskLevels[predId] !== undefined ? taskLevels[predId] + 1 : 0;
+      });
+      level = Math.max(...validLevels, 0);
     }
 
-    eventLevels[id] = level;
-
-    if (!levels[level]) {
-      levels[level] = [];
-    }
-
+    taskLevels[id] = level;
+    if (!levels[level]) levels[level] = [];
     levels[level].push(id);
   });
 
-  const xSpacing = 250;
-  const ySpacing = 180;
-  const marginX = 100;
-  const marginY = 150;
+  const xSpacing = isAON ? 320 : 250;
+  const ySpacing = isAON ? 200 : 180;
+  const marginX = 120;
+  const marginY = 120;
 
-  let maxEventsInLevel = 1;
-
+  let maxElementsInLevel = 1;
   Object.values(levels).forEach((group) => {
-    maxEventsInLevel = Math.max(maxEventsInLevel, group.length);
+    maxElementsInLevel = Math.max(maxElementsInLevel, group.length);
   });
 
   Object.keys(levels).forEach((levelKey) => {
     const ids = levels[levelKey];
     const level = Number(levelKey);
-
     const totalHeight = (ids.length - 1) * ySpacing;
-
     const startY =
-      marginY + (maxEventsInLevel * ySpacing) / 2 - totalHeight / 2;
+      marginY + (maxElementsInLevel * ySpacing) / 2 - totalHeight / 2;
 
     ids.forEach((id, index) => {
       positions[id] = {
@@ -74,7 +72,7 @@ export function layoutPert(model) {
         y:
           ids.length > 1
             ? startY + index * ySpacing
-            : marginY + (maxEventsInLevel * ySpacing) / 2,
+            : marginY + (maxElementsInLevel * ySpacing) / 2,
       };
     });
   });
@@ -82,6 +80,6 @@ export function layoutPert(model) {
   return {
     positions,
     width: Object.keys(levels).length * xSpacing + marginX * 2,
-    height: maxEventsInLevel * ySpacing + marginY * 2,
+    height: maxElementsInLevel * ySpacing + marginY * 2,
   };
 }

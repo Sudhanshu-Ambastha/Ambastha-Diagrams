@@ -25,13 +25,27 @@
     "webpack-cli": "^7.0.2"
   },
   "contributes": {
-    "iconThemes": [
-      {
-        "id": "ambastha-icons",
-        "label": "Ambastha Icons",
-        "path": "./icons/icon-theme.json"
+    "configuration": {
+      "title": "Ambastha Diagrams",
+      "properties": {
+        "ambastha.registryUrl": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "URL to a remote diagram registry JSON. Leave empty to use the bundled registry."
+        }
       }
-    ],
+    },
+    "configurationDefaults": {
+      "[abd]": {
+        "editor.wordBasedSuggestions": "off",
+        "editor.snippetSuggestions": "none",
+        "editor.quickSuggestions": {
+          "other": "on",
+          "comments": "off",
+          "strings": "off"
+        }
+      }
+    },
     "languages": [
       {
         "id": "abd",

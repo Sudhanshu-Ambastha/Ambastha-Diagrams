@@ -1,5 +1,5 @@
 {
-  "name": "diagram-engine",
+  "name": "ambastha-engine",
   "version": "1.0.0",
   "description": "Zero-dependency SVG diagram renderer. Lightweight Mermaid alternative — 40x smaller, works in browsers, VS Code Web, and Node.js.",
   "keywords": [
@@ -13,18 +13,18 @@
     "headless",
     "vscode-web"
   ],
-  "author": "Ambastha",
+  "author": "Sudhanshu-Ambastha",
   "license": "Apache-2.0",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./core/index.js"
-    },
-    "./registry": {
-      "import": "./registry/register.js"
+      "import": "./core/index.js",
+      "default": "./core/index.js"
     },
     "./examples": {
       "import": "./registry/examples.json",
+      "require": "./registry/examples.json",
+      "webpack": "./registry/examples.json",
       "default": "./registry/examples.json"
     }
   },
@@ -41,10 +41,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/diagram-engine"
+    "url": "https://github.com/Sudhanshu-Ambastha/diagram-engine"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/diagram-engine/issues"
+    "url": "https://github.com/Sudhanshu-Ambastha/diagram-engine/issues"
   },
-  "homepage": "https://github.com/yourusername/diagram-engine#readme"
+  "homepage": "https://github.com/Sudhanshu-Ambastha/diagram-engine#readme"
 }

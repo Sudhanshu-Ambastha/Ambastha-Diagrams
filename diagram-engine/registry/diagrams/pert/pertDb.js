@@ -19,25 +19,18 @@
 
 export class PERTDb {
   constructor() {
+    this.type = "aoa";
     this.events = {};
     this.activities = [];
+    this.tasks = {};
+    this.projectTime = 0;
   }
 
-  addActivity(from, to, topt, tml, tpess) {
-    if (!from || !to) {
-      console.warn("Invalid activity:", { from, to });
-      return;
-    }
-
+  addActivityAOA(from, to, topt, tml, tpess) {
     const te = (topt + 4 * tml + tpess) / 6;
     const variance = Math.pow((tpess - topt) / 6, 2);
 
-    this.activities.push({
-      from,
-      to,
-      te,
-      variance,
-    });
+    this.activities.push({ from, to, te, variance });
 
     [from, to].forEach((id) => {
       if (!this.events[id]) {
@@ -51,44 +44,53 @@ export class PERTDb {
       }
     });
 
-    this.events[from].successors.push({
-      to,
-      te,
-    });
+    this.events[from].successors.push({ to, te });
+    this.events[to].predecessors.push({ from, te });
+  }
 
-    this.events[to].predecessors.push({
-      from,
-      te,
-    });
+  addTaskAON(id, duration, predecessors) {
+    this.tasks[id] = {
+      id,
+      duration,
+      predecessors: predecessors || [],
+      successors: [],
+      es: 0,
+      ef: 0,
+      ls: 0,
+      lf: Infinity,
+      slack: 0,
+      isCritical: false,
+    };
   }
 
   topologicalSort() {
+    const isAON = this.type === "aon";
+    const nodes = isAON ? this.tasks : this.events;
     const indegree = {};
     const queue = [];
     const result = [];
 
-    Object.keys(this.events).forEach((id) => {
-      indegree[id] = this.events[id].predecessors.length;
-
-      if (indegree[id] === 0) {
-        queue.push(id);
-      }
+    Object.keys(nodes).forEach((id) => {
+      indegree[id] = isAON
+        ? nodes[id].predecessors.length
+        : nodes[id].predecessors.length;
+      if (indegree[id] === 0) queue.push(id);
     });
 
     while (queue.length > 0) {
       const current = queue.shift();
       result.push(current);
 
-      this.events[current].successors.forEach((succ) => {
-        indegree[succ.to]--;
-
-        if (indegree[succ.to] === 0) {
-          queue.push(succ.to);
-        }
+      const targetSuccessors = isAON
+        ? nodes[current].successors
+        : nodes[current].successors.map((s) => s.to);
+      targetSuccessors.forEach((succId) => {
+        indegree[succId]--;
+        if (indegree[succId] === 0) queue.push(succId);
       });
     }
 
-    if (result.length !== Object.keys(this.events).length) {
+    if (result.length !== Object.keys(nodes).length) {
       throw new Error(
         "PERT graph contains a cycle or disconnected dependency issue.",
       );
@@ -98,18 +100,22 @@ export class PERTDb {
   }
 
   calculate() {
-    const orderedIds = this.topologicalSort();
+    if (this.type === "aoa") {
+      this.calculateAOA();
+    } else {
+      this.calculateAON();
+    }
+  }
 
+  calculateAOA() {
+    const orderedIds = this.topologicalSort();
     orderedIds.forEach((id) => {
       const node = this.events[id];
-
       if (node.predecessors.length === 0) {
         node.e = 0;
       } else {
         node.e = Math.max(
-          ...node.predecessors.map(
-            (pred) => this.events[pred.from].e + pred.te,
-          ),
+          ...node.predecessors.map((p) => this.events[p.from].e + p.te),
         );
       }
     });
@@ -117,21 +123,60 @@ export class PERTDb {
     const endNodes = orderedIds.filter(
       (id) => this.events[id].successors.length === 0,
     );
-
-    const projectTime = Math.max(...endNodes.map((id) => this.events[id].e));
+    this.projectTime = Math.max(...endNodes.map((id) => this.events[id].e), 0);
 
     [...orderedIds].reverse().forEach((id) => {
       const node = this.events[id];
-
       if (node.successors.length === 0) {
-        node.l = projectTime;
+        node.l = this.projectTime;
       } else {
         node.l = Math.min(
-          ...node.successors.map((succ) => this.events[succ.to].l - succ.te),
+          ...node.successors.map((s) => this.events[s.to].l - s.te),
         );
       }
     });
+  }
 
-    this.projectTime = projectTime;
+  calculateAON() {
+    Object.keys(this.tasks).forEach((id) => {
+      this.tasks[id].predecessors.forEach((predId) => {
+        if (this.tasks[predId]) {
+          this.tasks[predId].successors.push(id);
+        }
+      });
+    });
+
+    const orderedIds = this.topologicalSort();
+
+    orderedIds.forEach((id) => {
+      const task = this.tasks[id];
+      if (task.predecessors.length === 0) {
+        task.es = 0;
+      } else {
+        task.es = Math.max(
+          ...task.predecessors.map((predId) => this.tasks[predId]?.ef || 0),
+        );
+      }
+      task.ef = task.es + task.duration;
+    });
+
+    this.projectTime = Math.max(
+      ...Object.values(this.tasks).map((t) => t.ef),
+      0,
+    );
+
+    [...orderedIds].reverse().forEach((id) => {
+      const task = this.tasks[id];
+      if (task.successors.length === 0) {
+        task.lf = this.projectTime;
+      } else {
+        task.lf = Math.min(
+          ...task.successors.map((succId) => this.tasks[succId]?.ls || 0),
+        );
+      }
+      task.ls = task.lf - task.duration;
+      task.slack = task.ls - task.es;
+      task.isCritical = task.slack <= 0.01;
+    });
   }
 }

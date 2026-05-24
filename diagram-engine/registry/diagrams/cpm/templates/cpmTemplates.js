@@ -34,14 +34,46 @@ export const cpmTemplates = {
             stroke="${borderColor}" stroke-width="${borderWidth}"/>
       <text x="60" y="55" text-anchor="middle" font-size="13" font-family="sans-serif" font-weight="800">${data.id}</text>
       <rect x="0"  y="70" width="40"  height="30" fill="#f1f5f9" stroke="black" stroke-width="1"/>
-      <rect x="40" y="70" width="40"  height="30"
+      
+      <rect x="40" y="70" width="40" height="30" 
             fill="${isCrit ? "#fee2e2" : "#f1f5f9"}" stroke="black" stroke-width="1"/>
+            
       <rect x="80" y="70" width="40"  height="30" fill="#f1f5f9" stroke="black" stroke-width="1"/>
       <text x="20"  y="90" text-anchor="middle" font-size="11" font-family="monospace">${data.ls}</text>
       <text x="60"  y="90" text-anchor="middle" font-size="11" font-family="monospace"
             fill="${isCrit ? "#ff4d4d" : "black"}">${data.slack}</text>
       <text x="100" y="90" text-anchor="middle" font-size="11" font-family="monospace">${data.lf}</text>
     </g>`;
+  },
+
+  connector(startX, startY, endX, endY, isCritical) {
+    const color = isCritical ? "#ff4d4d" : "#4b5563";
+    const sw = isCritical ? "2.5" : "1.5";
+    const markerId = isCritical ? "arrowhead-critical" : "arrowhead-normal";
+    return `
+    <g class="connector">
+      <path d="M ${startX} ${startY} L ${endX} ${endY}"
+            stroke="${color}" stroke-width="${sw}" fill="none" marker-end="url(#${markerId})"/>
+    </g>`;
+  },
+
+  assembleSVG(width, height, connectors, nodeGroup) {
+    return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arrowhead-normal" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#4b5563"/>
+      </marker>
+      <marker id="arrowhead-critical" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#ff4d4d"/>
+      </marker>
+      <marker id="arrowhead-dummy" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#9ca3af"/>
+      </marker>
+    </defs>
+    <rect width="100%" height="100%" fill="white"/>
+    ${connectors}
+    ${nodeGroup}
+  </svg>`;
   },
 };
 

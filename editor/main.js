@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { renderDiagram } from "../core/index.js";
+import { renderDiagram } from "../diagram-engine/core/index.js";
 
 const editor = document.getElementById("editor");
 const preview = document.getElementById("preview");
@@ -59,27 +59,22 @@ editor.addEventListener("dblclick", (e) => {
 
 async function init() {
   try {
-    const response = await fetch("../registry/examples.json");
+    const response = await fetch("../diagram-engine/registry/examples.json");
     if (!response.ok) throw new Error("Could not find examples.json");
 
     const examples = await response.json();
-
-    // Map to keep track of created optgroups by category name
     const groups = {};
 
     Object.entries(examples).forEach(([key, config]) => {
       const option = document.createElement("option");
 
-      // Target the new nested .template schema field
       option.value = config.template;
       option.textContent = key.replace(/_/g, " ").toUpperCase();
 
-      // Use description string as context title hover on selection
       if (config.description) {
         option.title = config.description;
       }
 
-      // Group elements inside HTML selector based on category type
       if (config.category) {
         const catName = config.category.toUpperCase();
         if (!groups[catName]) {

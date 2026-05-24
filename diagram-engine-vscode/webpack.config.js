@@ -20,7 +20,6 @@ module.exports = [
     devtool: false,
     mode: "production",
   },
-
   {
     name: "extension-desktop",
     entry: "./src/web/extension.js",
@@ -39,10 +38,9 @@ module.exports = [
     devtool: false,
     mode: "production",
   },
-
   {
     name: "engine",
-    entry: "../diagram-engine/core/index.js",
+    entry: "./src/web/engine.js",
     output: {
       filename: "engine.js",
       path: path.resolve(__dirname, "dist", "web"),

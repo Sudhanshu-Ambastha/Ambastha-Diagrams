@@ -1,33 +1,13 @@
 import * as vscode from "vscode";
-import bundledTemplates from "./examples.json";
+import bundledTemplates from "ambastha-engine/examples";
 
 let _registry = null;
 
-async function loadRegistry(context) {
+function loadRegistry() {
   if (_registry) return _registry;
-  const config = vscode.workspace.getConfiguration("ambastha");
-  const remoteUrl = config.get("registryUrl");
-
-  if (remoteUrl) {
-    try {
-      const res = await fetch(remoteUrl, { signal: AbortSignal.timeout(5000) });
-      if (res.ok) {
-        const data = await res.json();
-        _registry = normalizeRegistry(data);
-        console.log("[ABD] Registry loaded from remote:", remoteUrl);
-        return _registry;
-      }
-    } catch (err) {
-      console.warn(
-        "[ABD] Remote registry fetch failed, using bundled:",
-        err.message,
-      );
-    }
-  }
-
   _registry = normalizeRegistry(bundledTemplates);
   console.log(
-    "[ABD] Registry loaded from bundle, diagrams:",
+    "[ABD] Registry loaded from npm package, diagrams:",
     Object.keys(_registry),
   );
   return _registry;
@@ -49,20 +29,15 @@ function normalizeRegistry(raw) {
   return out;
 }
 
-let _cachedRegistry = null;
-
-export function registerCompletionProvider(context) {
-  loadRegistry(context).then((r) => {
-    _cachedRegistry = r;
-  });
+export function registerCompletionProvider() {
+  const registry = loadRegistry();
+  const keys = Object.keys(registry);
 
   return vscode.languages.registerCompletionItemProvider(
     { language: "abd", scheme: "*" },
     {
-      async provideCompletionItems(document, position) {
+      provideCompletionItems(document, position) {
         if (position.line !== 0) return new vscode.CompletionList([], false);
-
-        const registry = _cachedRegistry ?? (await loadRegistry(context));
 
         const lineText = document
           .lineAt(0)
@@ -70,7 +45,6 @@ export function registerCompletionProvider(context) {
           .trim()
           .toLowerCase();
 
-        const keys = Object.keys(registry);
         const matched =
           lineText === "" ? keys : keys.filter((k) => k.startsWith(lineText));
 
@@ -78,26 +52,21 @@ export function registerCompletionProvider(context) {
 
         const items = matched.map((key) => {
           const entry = registry[key];
-
           const item = new vscode.CompletionItem(
             { label: "📊 " + key, description: "Ambastha Diagrams" },
             vscode.CompletionItemKind.Keyword,
           );
-
           item.filterText = key;
-
           item.insertText = new vscode.SnippetString(entry.template);
           item.range = new vscode.Range(
             new vscode.Position(0, 0),
             new vscode.Position(0, document.lineAt(0).text.length),
           );
-
           item.detail = "Ambastha Diagrams · " + (entry.category ?? "");
           item.sortText = "0_" + key;
           item.preselect = matched.length === 1;
           item.documentation = buildDoc(key, entry);
           item.commitCharacters = [];
-
           return item;
         });
 

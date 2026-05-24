@@ -38,7 +38,8 @@
     "property-lines": {
       "patterns": [
         {
-          "match": "^\\s*(type|activity|duration|predecessor|optimistic|likely|pessimistic|title|dateformat|view|startdate|firstdayofweek|progress|color|customstart|milestonedate|milestonedeps|milestonecolor|section|status)\\s*(:)",
+          "comment": "Matches flowchart settings and node formatting declarations both inline or root block",
+          "match": "\\b(theme|fontTheme|ss|shape|fill|stroke|textColor|fontSize|fontWeight|type|activity|duration|predecessor|optimistic|likely|pessimistic|title|dateformat|view|startdate|firstdayofweek|progress|color|customstart|milestonedate|milestonedeps|milestonecolor|section|status)\\s*(:)",
           "captures": {
             "1": { "name": "entity.name.tag.abd" },
             "2": { "name": "punctuation.separator.key-value.abd" }

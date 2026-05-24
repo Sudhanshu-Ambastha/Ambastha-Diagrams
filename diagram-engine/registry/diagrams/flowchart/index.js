@@ -17,12 +17,13 @@
  * limitations under the License.
  */
 
-import { parseCPM } from "./parseCpm.js";
-import { layoutCPM } from "./layoutCPM.js";
-import { renderCPM } from "./renderCpm.js";
+import { parseFlowchart } from "./parseFlowchart.js";
+import { layoutFlowchart } from "./layoutFlowchart.js";
+import { renderFlowchart } from "./renderFlowchart.js";
 
 export default {
-  parse: parseCPM,
-  layout: layoutCPM,
-  render: renderCPM,
+  name: "flowchart",
+  parse: parseFlowchart,
+  layout: layoutFlowchart,
+  render: renderFlowchart,
 };

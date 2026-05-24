@@ -13,16 +13,7 @@ const AUTHOR = "Sudhanshu Ambastha";
 const YEAR = "2026";
 const PROJECT_ROOT = "./diagram-engine";
 
-const EXCLUDED_EXTENSIONS = [
-  ".md",
-  ".svg",
-  ".json",
-  ".png",
-  ".jpg",
-  ".txt",
-  ".png",
-  ".svg",
-];
+const EXCLUDED_EXTENSIONS = [".md", ".svg", ".json", ".png", ".jpg", ".txt"];
 const EXCLUDED_FILES = [
   "LICENSE",
   "notice",
@@ -53,7 +44,7 @@ const getCommentedHeader = (fileName, description, ext) => {
 
   switch (ext) {
     case ".html":
-      return `<!--${licenseText}-->\n\n`;
+      return `\n\n`;
     case ".css":
       return `/*${licenseText}*/\n\n`;
     case ".js":
@@ -66,6 +57,50 @@ const getCommentedHeader = (fileName, description, ext) => {
       return null;
   }
 };
+
+function removeExistingComments(content, ext) {
+  let cleaned = content;
+
+  if ([".js", ".ts", ".java", ".c", ".cpp"].includes(ext)) {
+    cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, (match) => {
+      if (match.includes("Licensed under the Apache License")) {
+        return match;
+      }
+      return "";
+    });
+
+    cleaned = cleaned
+      .split(/\r?\n/)
+      .map((line) => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith("//")) return null;
+
+        if (line.includes("//")) {
+          const idx = line.indexOf("//");
+          const before = line.slice(0, idx);
+          if (!before.match(/https?:$/)) {
+            return before.trimEnd();
+          }
+        }
+        return line;
+      })
+      .filter((line) => line !== null)
+      .join("\n");
+  } else if (ext === ".css") {
+    cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, (match) => {
+      if (match.includes("Licensed under the Apache License")) return match;
+      return "";
+    });
+  } else if (ext === ".html") {
+    const htmlCommentRegex = new RegExp("", "g");
+    cleaned = cleaned.replace(htmlCommentRegex, (match) => {
+      if (match.includes("Licensed under the Apache License")) return match;
+      return "";
+    });
+  }
+
+  return cleaned.trim() + "\n";
+}
 
 function processDirectory(dir) {
   if (!fs.existsSync(dir)) return;
@@ -101,9 +136,13 @@ function processDirectory(dir) {
         return;
       }
 
-      const newContent = header + content;
+      const strippedContent = removeExistingComments(content, ext);
+
+      const newContent = header + strippedContent;
       fs.writeFileSync(filePath, newContent, "utf8");
-      console.log(`✅ Applied ${ext} header to: ${filePath}`);
+      console.log(
+        `✅ Stripped comments & applied ${ext} header to: ${filePath}`,
+      );
     }
   });
 }

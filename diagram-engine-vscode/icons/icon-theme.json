@@ -1,7 +1,7 @@
 {
   "iconDefinitions": {
     "_abd": {
-      "iconPath": "./icons/logo.svg"
+      "iconPath": "./logo.svg"
     }
   },
   "fileExtensions": {
