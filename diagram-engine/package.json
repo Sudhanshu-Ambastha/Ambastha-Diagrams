@@ -1,7 +1,7 @@
 {
   "name": "ambastha-engine",
   "version": "1.0.0",
-  "description": "Zero-dependency SVG diagram renderer. Lightweight Mermaid alternative — 40x smaller, works in browsers, VS Code Web, and Node.js.",
+  "description": "Core parsing, layout, and visualization engine for Ambastha Diagrams",
   "keywords": [
     "diagram",
     "svg",
@@ -26,6 +26,9 @@
       "require": "./registry/examples.json",
       "webpack": "./registry/examples.json",
       "default": "./registry/examples.json"
+    },
+    "./syntax": {
+      "default": "./syntax/abd.tmLanguage.json"
     }
   },
   "main": "./core/index.js",
@@ -33,6 +36,7 @@
   "files": [
     "core/",
     "registry/",
+    "syntax/",
     "README.md",
     "NOTICE"
   ],

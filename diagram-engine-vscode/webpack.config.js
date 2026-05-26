@@ -1,4 +1,5 @@
 const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = [
   {
@@ -16,6 +17,24 @@ module.exports = [
       extensions: [".js", ".json"],
       fallback: { fs: false, path: false },
     },
+    plugins: [
+      new CopyPlugin({
+        patterns: [
+          {
+            from: path.resolve(
+              __dirname,
+              "node_modules/ambastha-engine/syntax/abd.tmLanguage.json",
+            ),
+            to: path.resolve(
+              __dirname,
+              "dist",
+              "syntax",
+              "abd.tmLanguage.json",
+            ),
+          },
+        ],
+      }),
+    ],
     performance: { hints: false },
     devtool: false,
     mode: "production",

@@ -24,7 +24,11 @@ limitations under the License. -->
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-    <input type="color" id="colorPicker" style="display: none" />
+    <input
+      type="color"
+      id="colorPicker"
+      style="position: absolute; visibility: hidden; width: 0; height: 0"
+    />
 
     <div class="sidebar">
       <label for="exampleSelector">Templates & Examples</label>
@@ -61,38 +65,11 @@ Gate ? {
   Yes: Deploy -> Alert
   No:  Roll -failed-> Alert
 }
-  </textarea
-      >
+      </textarea>
     </div>
 
     <div id="preview" class="canvas"></div>
 
     <script type="module" src="./main.js"></script>
-  </bodyflowchart
-theme: modernSaaS
-fontTheme: technical
-ss: true "Pipeline Start" "Pipeline Complete"
-
-def {
-  Start: "Git Push", shape: terminal, fill: "#1e1b4b", textColor: "#ffffff"
-  Build: "Compile Source", fontWeight: bold
-  Unit:  "Unit Tests", fontSize: xl, fill: success
-  Lint:  "Linter Run"
-  Sec:   "Security Scan", fill: "#fef08a", stroke: warning
-  Gate:  "All Pass?", shape: d, fill: warning, textColor: critical
-  Deploy: "Prod Deploy", shape: p, fill: success
-  Roll:   "Rollback Routine", fill: critical, textColor: "#ffffff"
-  Alert:  "Slack Notification", fontSize: sm
-}
-
-Start -> Build
-
-Build -> Unit, Lint, Sec
-
-Unit, Lint, Sec -> Gate
-
-Gate ? {
-  Yes: Deploy -> Alert
-  No:  Roll -failed-> Alert
-}
+  </body>
 </html>

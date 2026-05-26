@@ -24,38 +24,93 @@ const preview = document.getElementById("preview");
 const selector = document.getElementById("exampleSelector");
 const colorPicker = document.getElementById("colorPicker");
 
-editor.addEventListener("dblclick", (e) => {
+let activeCanvasNodeId = null;
+
+editor.addEventListener("dblclick", () => {
   const text = editor.value;
-  const pos = editor.selectionStart;
-  const hexMatch = text.match(/#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})/g);
-  if (!hexMatch) return;
+  const selectionStart = editor.selectionStart;
 
-  let start = pos;
-  while (start > 0 && text[start] !== "#" && !/\s/.test(text[start])) start--;
+  const leftMatch = text.substring(0, selectionStart).match(/[#A-Fa-f0-9]+$/);
+  const rightMatch = text.substring(selectionStart).match(/^[#A-Fa-f0-9]+/);
 
-  let end = pos;
-  while (end < text.length && /[A-Fa-f0-9#]/.test(text[end])) end++;
+  const leftToken = leftMatch ? leftMatch[0] : "";
+  const rightToken = rightMatch ? rightMatch[0] : "";
+  const completeWord = leftToken + rightToken;
 
-  const word = text.substring(start, end).trim();
   const hexRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
 
-  if (hexRegex.test(word)) {
+  if (hexRegex.test(completeWord)) {
+    activeCanvasNodeId = null;
+    const startIdx = selectionStart - leftToken.length;
+    const endIdx = selectionStart + rightToken.length;
+
     colorPicker.value =
-      word.length === 4
-        ? `#${word[1]}${word[1]}${word[2]}${word[2]}${word[3]}${word[3]}`
-        : word;
+      completeWord.length === 4
+        ? `#${completeWord[1]}${completeWord[1]}${completeWord[2]}${completeWord[2]}${completeWord[3]}${completeWord[3]}`
+        : completeWord;
+
+    colorPicker.oninput = (e) => {
+      const updatedColor = e.target.value;
+      const currentText = editor.value;
+
+      editor.value =
+        currentText.substring(0, startIdx) +
+        updatedColor +
+        currentText.substring(endIdx);
+      update();
+
+      editor.setSelectionRange(startIdx, startIdx + updatedColor.length);
+    };
 
     colorPicker.click();
-
-    colorPicker.oninput = () => {
-      const newColor = colorPicker.value;
-      const editorText = editor.value;
-      editor.value =
-        editorText.substring(0, start) + newColor + editorText.substring(end);
-      update();
-    };
   }
 });
+
+function bindCanvasInteraction() {
+  const nodes = preview.querySelectorAll("[data-node-id]");
+  nodes.forEach((node) => {
+    node.addEventListener("click", (e) => {
+      activeCanvasNodeId = e.target.getAttribute("data-node-id");
+
+      colorPicker.oninput = (ev) => {
+        if (!activeCanvasNodeId) return;
+        const pickedColor = ev.target.value;
+        let scriptText = editor.value;
+
+        const nodeLineRegex = new RegExp(
+          `(${activeCanvasNodeId}\\s*:\\s*"[^"]*"[^\\n]*)`,
+        );
+
+        if (nodeLineRegex.test(scriptText)) {
+          const fillPropRegex = new RegExp(
+            `(${activeCanvasNodeId}\\s*:\\s*"[^"]*"[^\\n]*fill:\\s*)([^,\\n\\}]+)`,
+          );
+          if (fillPropRegex.test(scriptText)) {
+            scriptText = scriptText.replace(
+              fillPropRegex,
+              `$1"${pickedColor}"`,
+            );
+          } else {
+            scriptText = scriptText.replace(
+              nodeLineRegex,
+              `$1, fill: "${pickedColor}"`,
+            );
+          }
+        } else {
+          scriptText = scriptText.replace(
+            /(def\s*\{)/,
+            `$1\n  ${activeCanvasNodeId}: "${activeCanvasNodeId}", fill: "${pickedColor}"`,
+          );
+        }
+
+        editor.value = scriptText;
+        update();
+      };
+
+      colorPicker.click();
+    });
+  });
+}
 
 async function init() {
   try {
@@ -67,7 +122,6 @@ async function init() {
 
     Object.entries(examples).forEach(([key, config]) => {
       const option = document.createElement("option");
-
       option.value = config.template;
       option.textContent = key.replace(/_/g, " ").toUpperCase();
 
@@ -114,6 +168,8 @@ function update() {
     const svg = renderDiagram(input);
     preview.innerHTML = svg;
     editor.style.borderColor = "#cbd5e1";
+
+    bindCanvasInteraction();
   } catch (err) {
     editor.style.borderColor = "#ef4444";
     preview.innerHTML = `
