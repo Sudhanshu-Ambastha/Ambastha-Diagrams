@@ -45,7 +45,20 @@ export function renderClass(db, layoutData, theme) {
   Object.keys(db.structs).forEach((name) => {
     const pos = positions[name];
     const struct = db.structs[name];
-    output += AbdShapes.classBox(pos.x, pos.y, pos.w, struct, theme);
+    const normalizedAttributes = struct.attributes.map((attr) => {
+      const match = attr.match(/^([+\-])?([^:]+):(.+)$/);
+      if (match) {
+        const symbol = match[1] || "";
+        const name = match[2].trim();
+        const type = match[3].trim();
+        return `${symbol}${type} ${name}`;
+      }
+      return attr;
+    });
+
+    const normalizedStruct = { ...struct, attributes: normalizedAttributes };
+
+    output += AbdShapes.classBox(pos.x, pos.y, pos.w, normalizedStruct, theme);
   });
 
   return `

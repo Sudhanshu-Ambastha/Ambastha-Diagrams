@@ -12,7 +12,7 @@
   "class": {
     "description": "Model object-oriented class structures using clean, C/C++ style native struct declarations.",
     "category": "structure",
-    "template": "class\nstruct User {\n    +string id\n    +string email\n    -string password\n    +getSession()\n}\n\nstruct Customer {\n    +string name\n    +string billingAddress\n    +signUp()\n    +login()\n}\n\nstruct Order {\n    +string id\n    +date orderDate\n    +string status\n    +updateStatus()\n}\n\nstruct Logger {\n    +log()\n}\n\nstruct PaymentGateway {\n    +processPayment()\n    +refund()\n}\n\ninherits: Customer --> User\ncomposition: Order --> Customer\ndependency: Order --> Logger; Order --> PaymentGateway"
+    "template": "class\nstruct User {\n    +id: string\n    +email: string\n    -password: string\n    +getSession(): void\n}\n\nstruct Customer {\n    +name: string\n    +billingAddress: string\n    +signUp(): void\n    +login(): bool\n}\n\nstruct Order {\n    +id: string\n    +orderDate: date\n    +status: string\n    +updateStatus(): void\n}\n\nstruct Logger {\n    +log(): void\n}\n\nstruct PaymentGateway {\n    +processPayment(): bool\n    +refund(): bool\n}\n\ninherits: Customer --> User\ncomposition: Order --> Customer\ndependency: Order --> Logger; Order --> PaymentGateway"
   },
   "usecase": {
     "description": "Describe system scopes, external boundaries, and user interactions within system blocks.",
