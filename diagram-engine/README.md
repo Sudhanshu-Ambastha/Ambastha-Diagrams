@@ -13,6 +13,27 @@ Unlike traditional tools that treat all diagrams as manual drawing tasks, this e
 1. **Deterministic (Data-Driven):** For diagrams where the layout is a result of mathematical constraints (e.g., CPM, PERT, Sequence). The user provides the raw data and dependencies; the engine automatically calculates the Critical Path, time-scales, and optimal routing.
 2. **Declarative (Structure-Driven):** For diagrams where the user defines the visual relationship and hierarchy (e.g., Use Case, Flowcharts). The engine ensures structural integrity and consistent styling without "fussy" syntax or manual coordinate management.
 
+## Why Ambastha-Diagrams?
+
+| Feature         | Ambastha-Diagrams            | Legacy / Generalist Tools       |
+| --------------- | ---------------------------- | ------------------------------- |
+| **Runtime**     | Vanilla JS (Zero-Dependency) | Requires Java / Heavy Libraries |
+| **VS Code Web** | ✅ Native Support            | ❌ Often Unsupported / Breaks   |
+| **Logic Depth** | Formal State Semantics       | Generic "Box Drawing"           |
+| **License**     | Apache 2.0 (Permissive)      | Often Restrictive (AGPL / GPL)  |
+
+### Key Differentiator
+
+While many existing tools struggle with runtime bloat, heavyweight dependencies, or desktop-centric assumptions (e.g. Java-based stacks), **Ambastha-Diagrams** is designed for the **VS Code Web era**.
+
+Our **Vanilla-First architecture** enables fast, dependency-free rendering directly in:
+
+- 🌐 Browsers
+- 🧩 VS Code Web (`vscode.dev`)
+- ⚙️ Headless / serverless environments
+
+No heavyweight external runtimes. No dependency overhead. Just lightweight, native rendering built for modern web workflows.
+
 ## Technical Specifications
 
 - **Package Size:** ~642 KB

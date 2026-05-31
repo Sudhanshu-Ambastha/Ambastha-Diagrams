@@ -28,8 +28,11 @@
   "browser": "./dist/web/extension.js",
   "categories": [
     "Visualization",
-    "Other",
-    "Education"
+    "Programming Languages",
+    "Education",
+    "Snippets",
+    "Linters",
+    "Other"
   ],
   "icon": "icons/logo.png",
   "activationEvents": [
