@@ -6,6 +6,14 @@ A high-performance, modular diagram rendering ecosystem designed for headless SV
 
 `Ambastha-Diagrams` provides a lightweight, zero-dependency alternative for generating structural diagrams. By utilizing native SVG and standard ECMAScript Modules (ESM), it offers high-speed rendering with minimal memory overhead, suitable for both client-side and server-side environments.
 
+## Installation
+
+To start using the core rendering engine in your own projects:
+
+```bash
+npm i ambastha-engine
+```
+
 ## Dual-Categorization Logic
 
 Unlike traditional tools that treat all diagrams as manual drawing tasks, this engine categorizes visualization into two distinct workflows:
