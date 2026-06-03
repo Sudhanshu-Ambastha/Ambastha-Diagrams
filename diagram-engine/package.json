@@ -42,7 +42,7 @@
   "module": "./core/index.js",
   "scripts": {
     "build": "echo 'No build required' || true",
-    "sync-changelog": "copyfiles -f ../CHANGELOG.md .",
+    "sync-changelog": "copyfiles -f ../CHANGELOG.md . && node ../apply-headers.js",
     "prepublishOnly": "npm run sync-changelog"
   },
   "files": [
