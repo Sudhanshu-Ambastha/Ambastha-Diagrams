@@ -171,4 +171,16 @@ export const colorThemes = {
   },
 };
 
-export const colors = colorThemes;
+export const customThemeTemplate = {
+  background: "#ffffff",
+  primaryFill: "#bae6fd",
+  primaryStroke: "#0369a1",
+  secondaryFill: "#fbcfe8",
+  secondaryStroke: "#be185d",
+  text: "#1f2937",
+  critical: "#fb7185",
+  success: "#4ade80",
+  warning: "#fbbf24",
+  connector: "#475569",
+  dashedConnector: "#64748b",
+};

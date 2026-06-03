@@ -25,6 +25,8 @@ import kanban from "./diagrams/kanban/index.js";
 import sequence from "./diagrams/sequence/index.js";
 import classDiagram from "./diagrams/class/index.js";
 import flowchart from "./diagrams/flowchart/index.js";
+import { StateMachine } from "./diagrams/stateMachine/index.js";
+import ERDiagram from "./diagrams/er/index.js";
 
 export const diagrams = {
   useCase: usecase,
@@ -35,4 +37,6 @@ export const diagrams = {
   sequence: sequence,
   class: classDiagram,
   flowchart: flowchart,
+  stateMachine: StateMachine,
+  ERDiagram: ERDiagram,
 };

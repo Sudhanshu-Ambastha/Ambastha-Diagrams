@@ -18,8 +18,9 @@
  */
 
 import { diagrams } from "../registry/register.js";
+import { defaultTheme } from "./theme/index.js";
 
-export function renderDiagram(source) {
+export function renderDiagram(source, options = {}) {
   const lines = source.trim().split("\n");
   const type = lines[0].trim();
   const diagram = diagrams[type];
@@ -28,16 +29,19 @@ export function renderDiagram(source) {
     throw new Error("Unknown diagram type: " + type);
   }
 
+  const theme =
+    options.theme || diagram.theme || defaultTheme.colors.StandardBlue;
+
   const db =
     typeof diagram.db === "function" ? diagram.db() : (diagram.db ?? null);
 
   if (db !== null) {
     diagram.parse(source, db);
     const layoutData = diagram.layout(db);
-    return diagram.render(db, layoutData, diagram.theme ?? {});
+    return diagram.render(db, layoutData, theme);
   } else {
     const model = diagram.parse(source);
     const layoutData = diagram.layout(model);
-    return diagram.render(model, layoutData, diagram.theme ?? {});
+    return diagram.render(model, layoutData, theme);
   }
 }

@@ -2,7 +2,7 @@
   "name": "ambastha-diagrams",
   "displayName": "Ambastha Diagrams",
   "publisher": "SudhanshuAmbastha",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Diagram previewer for .abd files.",
   "keywords": [
     "diagram",
@@ -39,7 +39,13 @@
     "onLanguage:abd"
   ],
   "scripts": {
-    "build": "webpack --mode production"
+    "sync-changelog": "copyfiles -f ../CHANGELOG.md .",
+    "prebuild": "npm run sync-changelog",
+    "prepublishOnly": "npm run sync-changelog",
+    "build": "webpack --mode production",
+    "clean": "rimraf dist",
+    "test-web": "npm run clean && npm run build && npx @vscode/test-web --extensionDevelopmentPath=.",
+    "test-desktop": "npm run clean && npm run build"
   },
   "contributes": {
     "languages": [
@@ -63,16 +69,18 @@
       {
         "language": "abd",
         "scopeName": "source.abd",
-        "path": "./dist/syntax/abd.tmLanguage.json"
+        "path": "./dist/web/syntax/abd.tmLanguage.json"
       }
     ]
   },
   "devDependencies": {
     "copy-webpack-plugin": "^14.0.0",
+    "copyfiles": "^2.4.1",
+    "rimraf": "^6.1.3",
     "webpack": "^5.107.2",
     "webpack-cli": "^7.0.3"
   },
   "dependencies": {
-    "ambastha-engine": "^1.0.1"
+    "ambastha-engine": "^1.1.0"
   }
 }
