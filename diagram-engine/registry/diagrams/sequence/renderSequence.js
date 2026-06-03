@@ -19,19 +19,25 @@
 
 import { AbdShapes as S } from "../../utils/shapes.js";
 
-export function renderSequence(model, layoutData) {
-  const { canvas, lifelineBottom, theme } = layoutData;
+export function renderSequence(model, layoutData, theme) {
+  const { canvas = { width: 100, height: 100 }, lifelineBottom = 0 } =
+    layoutData;
+
   let out = "";
 
-  layoutData.participants.forEach((p) => {
-    out += S.lifeline(p.x, p.y + 20, lifelineBottom);
-  });
+  // 1. Render Lifelines and Participants
+  if (layoutData.participants) {
+    layoutData.participants.forEach((p) => {
+      out += S.lifeline(p.x, p.y + 20, lifelineBottom);
+    });
 
-  layoutData.participants.forEach((p) => {
-    out += S.seqParticipant(p.x, p.y, p.label, p.type, theme);
-  });
+    layoutData.participants.forEach((p) => {
+      out += S.seqParticipant(p.x, p.y, p.label, p.type, theme);
+    });
+  }
 
   function renderFlow(items) {
+    if (!items) return;
     items.forEach((item) => {
       if (item.kind === "message") {
         out += S.seqMessage(item.fromX, item.toX, item.y, item.text, item.type);
@@ -57,10 +63,16 @@ export function renderSequence(model, layoutData) {
     });
   }
 
-  renderFlow(layoutData.messages);
+  renderFlow(layoutData.messages || []);
+  const bgColor = theme?.background || "#ffffff";
 
-  return `<svg viewBox="0 0 ${canvas.width} ${canvas.height}" xmlns="http://www.w3.org/2000/svg">
-    <rect width="${canvas.width}" height="${canvas.height}" fill="white"/>
+  return `<svg 
+    viewBox="0 0 ${canvas.width} ${canvas.height}" 
+    width="${canvas.width}" 
+    height="${canvas.height}"
+    xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <rect width="${canvas.width}" height="${canvas.height}" fill="${bgColor}"/>
     ${out}
   </svg>`;
 }

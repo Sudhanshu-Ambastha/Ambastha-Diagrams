@@ -1,6 +1,6 @@
 {
   "name": "ambastha-engine",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Core parsing, layout, and visualization engine for Ambastha Diagrams",
   "keywords": [
     "diagram",
@@ -11,7 +11,9 @@
     "mermaid-alternative",
     "zero-dependency",
     "headless",
-    "vscode-web"
+    "vscode-web",
+    "documentation",
+    "dsl"
   ],
   "author": "Sudhanshu Ambastha",
   "license": "Apache-2.0",
@@ -26,20 +28,29 @@
     },
     "./examples": {
       "import": "./registry/examples.json",
-      "require": "./registry/examples.json",
       "default": "./registry/examples.json"
     },
     "./syntax": {
       "default": "./syntax/abd.tmLanguage.json"
+    },
+    "./theme": {
+      "import": "./core/theme/colors.js",
+      "default": "./core/theme/colors.js"
     }
   },
   "main": "./core/index.js",
   "module": "./core/index.js",
+  "scripts": {
+    "build": "echo 'No build required' || true",
+    "sync-changelog": "copyfiles -f ../CHANGELOG.md .",
+    "prepublishOnly": "npm run sync-changelog"
+  },
   "files": [
     "core/",
     "registry/",
     "syntax/",
     "README.md",
+    "CHANGELOG.md",
     "NOTICE",
     "LICENSE"
   ],
@@ -53,5 +64,8 @@
   "bugs": {
     "url": "https://github.com/Sudhanshu-Ambastha/Ambastha-Diagrams/issues"
   },
-  "homepage": "https://github.com/Sudhanshu-Ambastha/Ambastha-Diagrams#readme"
+  "homepage": "https://github.com/Sudhanshu-Ambastha/Ambastha-Diagrams#readme",
+  "devDependencies": {
+    "copyfiles": "^2.4.1"
+  }
 }

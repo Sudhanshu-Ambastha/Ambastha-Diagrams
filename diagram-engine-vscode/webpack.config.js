@@ -28,6 +28,7 @@ module.exports = [
             to: path.resolve(
               __dirname,
               "dist",
+              "web",
               "syntax",
               "abd.tmLanguage.json",
             ),

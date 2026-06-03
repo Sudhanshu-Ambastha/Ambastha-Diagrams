@@ -6,7 +6,7 @@ An ultra-lightweight, lightning-fast extension providing comprehensive syntax hi
 
 ## ✨ Features
 
-- **High-Fidelity Rendering:** Instantly parse and preview Use Case, Gantt, Kanban, Flowcharts, Pert, and CPM diagrams.
+- **High-Fidelity Rendering:** Instantly parse and preview Use Case, Gantt, Kanban, Flowcharts, Pert, CPM, Entity Relationship (ERD), and State Machine diagrams.
 - **Smart Language Integration:** Full TextMate token highlighting explicitly mapped for diagram syntax layouts.
 - **Live Interactive Synchronization:** View your visual architectural updates instantly alongside your workspace workspace text inputs.
 - **Vector File Exports:** Ship your optimized layouts directly into crisp vector-graphic payloads (`.svg` or `.png`).
@@ -77,4 +77,4 @@ This extension provides custom properties available inside your standard VS Code
 
 ## 📄 Extension License
 
-Distributed under the **Apache License, Version 2.0**. See the accompanying `LICENSE` file template inside the directory layout footprint for explicit usage regulations.
+Distributed under the **Apache License, Version 2.0**. See the accompanying [`LICENSE`](./LICENSE) file template inside the directory layout footprint for explicit usage regulations.

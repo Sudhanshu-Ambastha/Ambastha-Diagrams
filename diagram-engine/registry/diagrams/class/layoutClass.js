@@ -24,10 +24,15 @@ export function layoutClass(db) {
   }
 
   const positions = {};
-  const padding = 50;
-  const boxWidth = 200;
-  let currentX = padding;
-  let currentY = padding;
+  const PADDING = 60;
+  const BOX_W = 200;
+  const COL_GAP = 50;
+  const ROW_H = 250;
+  const MAX_ROW_W = 800;
+  let currentX = PADDING;
+  let currentY = PADDING;
+  let maxRightEdge = 0;
+  let maxBottomEdge = 0;
 
   const structNames = Object.keys(db.structs);
 
@@ -38,25 +43,27 @@ export function layoutClass(db) {
       : 0;
     const methCount = Array.isArray(struct.methods) ? struct.methods.length : 0;
     const totalItems = attrCount + methCount;
-    const boxHeight = 50 + totalItems * 20;
+    const BOX_H = 50 + totalItems * 20;
 
     positions[name] = {
       x: currentX,
       y: currentY,
-      w: boxWidth,
-      h: boxHeight,
+      w: BOX_W,
+      h: BOX_H,
     };
 
-    currentX += boxWidth + padding;
+    maxRightEdge = Math.max(maxRightEdge, currentX + BOX_W);
+    maxBottomEdge = Math.max(maxBottomEdge, currentY + BOX_H);
+    currentX += BOX_W + COL_GAP;
 
-    if (currentX > 800) {
-      currentX = padding;
-      currentY += 250;
+    if (currentX + BOX_W > PADDING + MAX_ROW_W) {
+      currentX = PADDING;
+      currentY += ROW_H;
     }
   });
 
-  const finalWidth = Math.max(currentX + padding, 1000);
-  const finalHeight = currentY + 400;
+  const finalWidth = maxRightEdge + PADDING;
+  const finalHeight = maxBottomEdge + PADDING;
 
   return { positions, width: finalWidth, height: finalHeight };
 }

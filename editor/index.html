@@ -20,56 +20,21 @@ limitations under the License. -->
   <head>
     <meta charset="UTF-8" />
     <title>Ambastha Diagram Editor</title>
-    <link rel="icon" type="image/svg+xml" href="../resources/logo.svg" />
     <link rel="stylesheet" href="./style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
   </head>
   <body>
-    <input
-      type="color"
-      id="colorPicker"
-      style="position: absolute; visibility: hidden; width: 0; height: 0"
-    />
-
-    <div class="sidebar">
-      <label for="exampleSelector">Templates & Examples</label>
-      <select id="exampleSelector">
-        <option value="">-- Load an Example --</option>
-      </select>
-
-      <label for="editor">Source Input (.abd)</label>
-      <textarea id="editor" spellcheck="false">
-flowchart
-theme: modernSaaS
-fontTheme: technical
-ss: true "Pipeline Start" "Pipeline Complete"
-
-def {
-  Start: "Git Push", shape: terminal, fill: "#1e1b4b", textColor: "#ffffff"
-  Build: "Compile Source", fontWeight: bold
-  Unit:  "Unit Tests", fontSize: xl, fill: success
-  Lint:  "Linter Run"
-  Sec:   "Security Scan", fill: "#fef08a", stroke: warning
-  Gate:  "All Pass?", shape: d, fill: warning, textColor: critical
-  Deploy: "Prod Deploy", shape: p, fill: success
-  Roll:   "Rollback Routine", fill: critical, textColor: "#ffffff"
-  Alert:  "Slack Notification", fontSize: sm
-}
-
-Start -> Build
-
-Build -> Unit, Lint, Sec
-
-Unit, Lint, Sec -> Gate
-
-Gate ? {
-  Yes: Deploy -> Alert
-  No:  Roll -failed-> Alert
-}
-      </textarea>
+    <div class="sidebar" id="sidebar">
+      <div class="toolbar">
+        <label for="exampleSelector">Templates</label>
+        <select id="exampleSelector">
+          <option value="">-- Choose a template --</option>
+        </select>
+      </div>
+      <div id="editor"></div>
     </div>
-
+    <div class="resizer" id="resizer"></div>
     <div id="preview" class="canvas"></div>
-
     <script type="module" src="./main.js"></script>
   </body>
 </html>

@@ -72,16 +72,6 @@ export function layoutFlowchart(model) {
     _lay(id);
   });
 
-  if (model.nodes["__ss_start__"] !== undefined) {
-    const layer0 = ids.filter((id) => (layer[id] ?? 0) === 0);
-    const nonStart = layer0.filter((id) => id !== "__ss_start__");
-    if (nonStart.length > 0) {
-      ids.forEach((id) => {
-        if (id !== "__ss_start__") layer[id] = (layer[id] ?? 0) + 1;
-      });
-    }
-  }
-
   const byLayer = {};
   ids.forEach((id) => {
     const l = layer[id] ?? 0;
@@ -92,11 +82,10 @@ export function layoutFlowchart(model) {
     .map(Number)
     .sort((a, b) => a - b);
 
-  for (let iter = 0; iter < 2; iter++) {
+  Array.from({ length: 2 }).forEach(() => {
     for (const l of layerNums) {
       if (l === 0) continue;
       const nodesInRow = byLayer[l] || [];
-
       const getBarycenter = (id) => {
         const parents = forwardParents[id] || [];
         if (parents.length === 0) return 0;
@@ -107,34 +96,36 @@ export function layoutFlowchart(model) {
         });
         return parentPositions.reduce((a, b) => a + b, 0) / parents.length;
       };
-
       nodesInRow.sort((a, b) => getBarycenter(a) - getBarycenter(b));
     }
-  }
+  });
 
   const NODE_H = { startstop: 44, decision: 80, io: 44, process: 40 };
   const nodeH = (id) => NODE_H[model.nodes[id]?.type] ?? 40;
 
-  const HORIZONTAL_GAP = 260;
-  const VERTICAL_GAP = 70;
+  const nodeW = (id) => {
+    const label = model.nodes[id]?.label || "";
+    const baseW = model.nodes[id]?.type === "decision" ? 140 : 120;
+    return Math.max(baseW, label.length * 8 + 40);
+  };
 
-  const centerX = 1000;
-  let currentY = 10;
+  const VERTICAL_GAP = 80;
+  const HORIZONTAL_SPACING = 60;
+  let currentY = 50;
 
-  for (let idx = 0; idx < layerNums.length; idx++) {
-    const l = layerNums[idx];
+  for (const l of layerNums) {
     const group = byLayer[l] || [];
-    const n = group.length;
-
     const maxRowH = Math.max(...group.map(nodeH));
 
-    group.forEach((id, i) => {
-      if (n === 1) {
-        positions[id] = { x: centerX, y: currentY + maxRowH / 2 };
-      } else {
-        const offset = (i - (n - 1) / 2) * HORIZONTAL_GAP;
-        positions[id] = { x: centerX + offset, y: currentY + maxRowH / 2 };
-      }
+    const rowWidth =
+      group.reduce((sum, id) => sum + nodeW(id), 0) +
+      (group.length - 1) * HORIZONTAL_SPACING;
+    let currentX = 1000 - rowWidth / 2;
+
+    group.forEach((id) => {
+      const w = nodeW(id);
+      positions[id] = { x: currentX + w / 2, y: currentY + maxRowH / 2 };
+      currentX += w + HORIZONTAL_SPACING;
     });
 
     currentY += maxRowH + VERTICAL_GAP;
@@ -142,24 +133,20 @@ export function layoutFlowchart(model) {
 
   const allX = Object.values(positions).map((p) => p.x);
   const allY = Object.values(positions).map((p) => p.y);
-
-  const minX = Math.min(...allX) - 200;
-  const maxX = Math.max(...allX) + 200;
-  const minY = Math.min(...allY) - 100;
-  const maxY = Math.max(...allY) + 150;
-
-  const calculatedWidth = maxX - minX;
-  const calculatedHeight = maxY - minY;
+  const minX = Math.min(...allX) - 100;
+  const maxX = Math.max(...allX) + 100;
+  const minY = Math.min(...allY) - 50;
+  const maxY = Math.max(...allY) + 50;
 
   ids.forEach((id) => {
-    positions[id].x = positions[id].x - minX;
-    positions[id].y = positions[id].y - minY;
+    positions[id].x -= minX - 50;
+    positions[id].y -= minY - 50;
   });
 
   return {
     positions,
-    width: Math.max(calculatedWidth, 800),
-    height: Math.max(calculatedHeight, 400),
+    width: Math.max(maxX - minX + 100, 800),
+    height: Math.max(maxY - minY + 50, 400),
     backEdgeSet,
   };
 }

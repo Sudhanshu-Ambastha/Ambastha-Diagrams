@@ -2,7 +2,7 @@
   "flowchart": {
     "description": "Visualize processes and decision flows with inline declarations and compact branch syntax.",
     "category": "flow",
-    "template": "flowchart\nss: true\n\ndef {\n  Start: \"Git Push\",      shape: terminal\n  Build: \"Compile Source\"\n  Unit:  \"Unit Tests\"\n  Lint:  \"Linter\"\n  Sec:   \"Security Scan\"\n  Gate:  \"All Pass?\",     shape: d\n  Deploy: \"Prod Deploy\",   shape: p\n  Roll:   \"Rollback\"\n  Alert:  \"Slack Alert\"\n}\n\nStart -> Build\n\nBuild -> Unit, Lint, Sec\n\nUnit, Lint, Sec -> Gate\n\nGate ? {\n  Yes: Deploy -> Alert\n  No:  Roll -failed-> Alert\n} -> End: \"Pipeline Finished\""
+    "template": "flowchart\nss: true\n\ndef {\n  Event:  \"OrderPlaced\",       shape: terminal\n  Inv:    \"Update Inventory\",  shape: process\n  Pay:    \"Charge Credit\",     shape: process\n  Ship:   \"Notify Shipping\",   shape: process\n  Stock:  \"Stock Available?\",  shape: decision\n  Notify: \"Send Email\",        shape: process\n}\n\nEvent -> Stock\n\nStock ? {\n  Yes: Inv -> Pay -> Ship -> Notify\n  No:  Notify: \"Out of Stock Msg\"\n}\n\nNotify -> End: \"Process Complete\""
   },
   "sequence": {
     "description": "Show temporal interactions and synchronized/asynchronous message flows between actors over time.",
@@ -48,5 +48,30 @@
     "description": "Manage agile work items, metadata categories, assignments, and priorities across markdown-table status columns.",
     "category": "planning",
     "template": "kanban\n== Sprint 1: Initial Setup ==\nTodo (#ffe0b2):\n| Create Documentation | docs_01 | High | @user | 2026-05-20 |\n| Blog Post | blog_22 | Low | _ | 2026-05-22 |\n\nIn Progress:\n| SVG Renderer Fix | id6 | Very High | @dev_team | 2026-05-15 |\n\nDone (#c8e6c9):\n| Define getData | id5 | - | @intern | 2026-05-10 |\n\n== Sprint 2: Feature Expansion ==\nTodo:\n| Add PERT Engine | eng_05 | High | @dev_team | _ |"
+  },
+  "stateMachine_order": {
+    "description": "Track an e-commerce order through fulfilment states with guards, choice pseudo-states, and a final state.",
+    "category": "structure",
+    "template": "stateMachine\nstate \"Pending\" as Pe\nstate \"Processing\" as Pr\nstate \"Shipped\" as Sh\nstate \"Delivered\" as De\nstate \"Cancelled\" as Ca\nchoice: C\nfinal: F\n\n[*] --> Pe\nPe --> C: place order\nC --> Pr: payment ok [balance >= total]\nC --> Ca: payment failed [balance < total]\nPr --> Sh: dispatch\nSh --> De: received\nDe --> F\nCa --> F\nnote on Ca: \"Refund issued\""
+  },
+  "stateMachine_parallel": {
+    "description": "Model concurrent download and validation flows running in parallel using fork and join pseudo-states.",
+    "category": "structure",
+    "template": "stateMachine\nfork: F\njoin: J\nstate \"Download\" as D\nstate \"Validate\" as V\nstate \"Notify\" as N\nfinal: E\n\n[*] --> F\nF --> D\nF --> V\nD --> J\nV --> J: validated [checksum ok]\nJ --> N: done\nN --> E"
+  },
+  "stateMachine_history": {
+    "description": "Demonstrate composite states and shallow history so a paused media player resumes at its last active substate.",
+    "category": "structure",
+    "template": "stateMachine\nstate \"Stopped\" as S\nstate \"Playing\" as P {\n  shallowHistory: H\n  state \"Buffering\" as B\n  state \"Running\" as R\n  state \"Paused\" as Pa\n  B --> R: ready\n  R --> Pa: pause\n  Pa --> R: resume\n}\nfinal: Off\n\n[*] --> S\nS --> P: play\nP --> S: stop\nS --> Off: power off\nP --> P.H: unpause"
+  },
+  "erd_simple": {
+    "description": "Quick modeling using direct relationships with all cardinality types.",
+    "category": "structure",
+    "template": "ERDiagram\nCustomer {1}-places-{0..n} Order\nOrder {1}-includes-{1..n} Item\nItem {0..n}-ordered in-{1} Product\nCategory {1}-contains-{1..n} Product\nCustomer {1}-has-{1..n} Address"
+  },
+  "erd_structured": {
+    "description": "Comprehensive schema with PKs, FKs, and access specifiers.",
+    "category": "structure",
+    "template": "ERDiagram\nentity Student {\n  * id: int PK\n  + name: string\n  - secret_code: string\n  # internal_id: int\n  ~ course_id: int FK\n}\nentity Course {\n  * id: int PK\n  + title: string\n}\nStudent {0..n}-enrolls in-{1} Course"
   }
 }

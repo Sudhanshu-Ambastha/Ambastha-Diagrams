@@ -19,171 +19,111 @@
 
 import { renderDiagram } from "../diagram-engine/core/index.js";
 
-const editor = document.getElementById("editor");
-const preview = document.getElementById("preview");
-const selector = document.getElementById("exampleSelector");
-const colorPicker = document.getElementById("colorPicker");
-
-let activeCanvasNodeId = null;
-
-editor.addEventListener("dblclick", () => {
-  const text = editor.value;
-  const selectionStart = editor.selectionStart;
-
-  const leftMatch = text.substring(0, selectionStart).match(/[#A-Fa-f0-9]+$/);
-  const rightMatch = text.substring(selectionStart).match(/^[#A-Fa-f0-9]+/);
-
-  const leftToken = leftMatch ? leftMatch[0] : "";
-  const rightToken = rightMatch ? rightMatch[0] : "";
-  const completeWord = leftToken + rightToken;
-
-  const hexRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-
-  if (hexRegex.test(completeWord)) {
-    activeCanvasNodeId = null;
-    const startIdx = selectionStart - leftToken.length;
-    const endIdx = selectionStart + rightToken.length;
-
-    colorPicker.value =
-      completeWord.length === 4
-        ? `#${completeWord[1]}${completeWord[1]}${completeWord[2]}${completeWord[2]}${completeWord[3]}${completeWord[3]}`
-        : completeWord;
-
-    colorPicker.oninput = (e) => {
-      const updatedColor = e.target.value;
-      const currentText = editor.value;
-
-      editor.value =
-        currentText.substring(0, startIdx) +
-        updatedColor +
-        currentText.substring(endIdx);
-      update();
-
-      editor.setSelectionRange(startIdx, startIdx + updatedColor.length);
-    };
-
-    colorPicker.click();
-  }
+require.config({
+  paths: {
+    vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs",
+  },
 });
 
-function bindCanvasInteraction() {
-  const nodes = preview.querySelectorAll("[data-node-id]");
-  nodes.forEach((node) => {
-    node.addEventListener("click", (e) => {
-      activeCanvasNodeId = e.target.getAttribute("data-node-id");
+let monacoEditor;
+const editorDiv = document.getElementById("editor");
+const resizer = document.getElementById("resizer");
+const sidebar = document.getElementById("sidebar");
 
-      colorPicker.oninput = (ev) => {
-        if (!activeCanvasNodeId) return;
-        const pickedColor = ev.target.value;
-        let scriptText = editor.value;
-
-        const nodeLineRegex = new RegExp(
-          `(${activeCanvasNodeId}\\s*:\\s*"[^"]*"[^\\n]*)`,
-        );
-
-        if (nodeLineRegex.test(scriptText)) {
-          const fillPropRegex = new RegExp(
-            `(${activeCanvasNodeId}\\s*:\\s*"[^"]*"[^\\n]*fill:\\s*)([^,\\n\\}]+)`,
-          );
-          if (fillPropRegex.test(scriptText)) {
-            scriptText = scriptText.replace(
-              fillPropRegex,
-              `$1"${pickedColor}"`,
-            );
-          } else {
-            scriptText = scriptText.replace(
-              nodeLineRegex,
-              `$1, fill: "${pickedColor}"`,
-            );
-          }
-        } else {
-          scriptText = scriptText.replace(
-            /(def\s*\{)/,
-            `$1\n  ${activeCanvasNodeId}: "${activeCanvasNodeId}", fill: "${pickedColor}"`,
-          );
-        }
-
-        editor.value = scriptText;
-        update();
+require(["vs/editor/editor.main"], function () {
+  monaco.languages.registerCompletionItemProvider("plaintext", {
+    provideCompletionItems: (model, position) => {
+      const word = model.getWordUntilPosition(position);
+      const range = {
+        startLineNumber: position.lineNumber,
+        endLineNumber: position.lineNumber,
+        startColumn: word.startColumn,
+        endColumn: word.endColumn,
       };
 
-      colorPicker.click();
-    });
+      return {
+        suggestions: [
+          {
+            label: "flowchart",
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: "flowchart\ntheme: modernSaaS\n\ndef {\n\n}\n",
+            range: range,
+          },
+          {
+            label: "sequence",
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: "sequence\n  participant User as U\n",
+            range: range,
+          },
+        ],
+      };
+    },
   });
-}
 
-async function init() {
+  monacoEditor = monaco.editor.create(editorDiv, {
+    value: "",
+    language: "plaintext",
+    theme: "vs-dark",
+    automaticLayout: true,
+    minimap: { enabled: false },
+    fontSize: 18,
+    lineHeight: 30,
+    fontFamily: "'Cascadia Code', 'Fira Code', monospace",
+  });
+
+  const resizeObserver = new ResizeObserver(() => {
+    monacoEditor.layout();
+  });
+  resizeObserver.observe(editorDiv);
+
+  monacoEditor.onDidChangeModelContent(update);
+  initTemplates();
+});
+
+resizer.addEventListener("mousedown", (e) => {
+  const startX = e.pageX;
+  const startWidth = sidebar.offsetWidth;
+
+  const onMouseMove = (ev) => {
+    const newWidth = startWidth + (ev.pageX - startX);
+    sidebar.style.width = `${Math.max(200, Math.min(600, newWidth))}px`;
+  };
+
+  const onMouseUp = () => {
+    document.removeEventListener("mousemove", onMouseMove);
+  };
+
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("mouseup", onMouseUp, { once: true });
+});
+
+async function initTemplates() {
+  const selector = document.getElementById("exampleSelector");
   try {
     const response = await fetch("../diagram-engine/registry/examples.json");
-    if (!response.ok) throw new Error("Could not find examples.json");
-
     const examples = await response.json();
-    const groups = {};
 
     Object.entries(examples).forEach(([key, config]) => {
       const option = document.createElement("option");
       option.value = config.template;
       option.textContent = key.replace(/_/g, " ").toUpperCase();
+      selector.appendChild(option);
+    });
 
-      if (config.description) {
-        option.title = config.description;
-      }
-
-      if (config.category) {
-        const catName = config.category.toUpperCase();
-        if (!groups[catName]) {
-          groups[catName] = document.createElement("optgroup");
-          groups[catName].label = `${catName} DIAGRAMS`;
-          selector.appendChild(groups[catName]);
-        }
-        groups[catName].appendChild(option);
-      } else {
-        selector.appendChild(option);
-      }
+    selector.addEventListener("change", (e) => {
+      if (e.target.value) monacoEditor.setValue(e.target.value);
     });
   } catch (err) {
-    console.warn(
-      "Using local defaults. Ensure registry/examples.json exists.",
-      err,
-    );
+    console.warn("Could not load templates", err);
   }
-  update();
 }
-
-selector.addEventListener("change", () => {
-  if (selector.value) {
-    editor.value = selector.value;
-    update();
-  }
-});
 
 function update() {
-  const input = editor.value.trim();
-  if (!input) {
-    preview.innerHTML = "";
-    return;
-  }
-
+  const input = monacoEditor.getValue().trim();
+  const preview = document.getElementById("preview");
   try {
-    const svg = renderDiagram(input);
-    preview.innerHTML = svg;
-    editor.style.borderColor = "#cbd5e1";
-
-    bindCanvasInteraction();
+    preview.innerHTML = renderDiagram(input);
   } catch (err) {
-    editor.style.borderColor = "#ef4444";
-    preview.innerHTML = `
-      <div class="error-box">
-        <h3>❌ Logic Error</h3>
-        <p>${err.message}</p>
-      </div>`;
+    preview.innerHTML = `<div class="error" style="color: #f87171; padding: 20px;">Error: ${err.message}</div>`;
   }
 }
-
-let timeout;
-editor.addEventListener("input", () => {
-  clearTimeout(timeout);
-  timeout = setTimeout(update, 100);
-});
-
-init();

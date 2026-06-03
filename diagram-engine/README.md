@@ -36,8 +36,9 @@ No heavyweight external runtimes. No dependency overhead. Just lightweight, nati
 
 ## Technical Specifications
 
-- **Package Size:** ~642 KB
-- **Disk Footprint:** ~1.20 MB
+- **Package Size:** ~250 KB
+- **Disk Footprint:** ~396 MB
+- **Install Size (Unpacked):** ~256.5 kB
 - **Architecture:** Modular (Core / Registry / Editor)
 - **License:** Apache License 2.0
 - **Environment:** Web-friendly (VS Code Web, Browser, Node.js)
@@ -48,6 +49,7 @@ No heavyweight external runtimes. No dependency overhead. Just lightweight, nati
 - **Modular Registry:** Pluggable architecture allowing for specific diagram types to be added or removed as needed.
 - **Web-First Integration:** Fully compatible with VS Code Web extensions and browser-based editors.
 - **Deterministic Layouts:** Precise coordinate calculation for complex routing, including native support for self-loops and multi-dependency nodes.
+- **Expanded Diagram Support:** Includes native rendering for ERD (Entity Relationship) and State Machine diagrams, featuring composite states and cardinality modeling.
 - **Agent-Friendly Syntax:** A streamlined DSL designed to minimize LLM hallucinations (e.g., inconsistent colons or delimiters).
 
 ## Project Structure
@@ -62,4 +64,4 @@ Refer to the specific package documentation for implementation details. The engi
 
 ## License
 
-This project is licensed under the [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0). See the `LICENSE` and `NOTICE` files for more information.
+This project is licensed under the [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0). See the [`LICENSE`](./LICENSE) and [`NOTICE`](./notice) files for more information.

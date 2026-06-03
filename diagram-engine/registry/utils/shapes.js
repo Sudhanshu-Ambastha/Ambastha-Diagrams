@@ -25,13 +25,14 @@ import { ganttTemplates } from "../diagrams/gantt/templates/ganttTemplates.js";
 import { T as kanbanTemplates } from "../diagrams/kanban/templates/kanbanTemplates.js";
 import { classTemplates } from "../diagrams/class/templates/classTemplates.js";
 import { flowchartTemplates } from "../diagrams/flowchart/templates/flowchartTemplates.js";
+import { stateMachineTemplates } from "../diagrams/stateMachine/templates/stateMachineTemplates.js";
+import { erdTemplates } from "../diagrams/er/templates/erTemplates.js";
 
 export const AbdShapes = {
   actor: (x, y, label, theme, styles) =>
     usecaseTemplates.actor(x, y, label, styles),
   note: (x, y, text, theme, styles) =>
     usecaseTemplates.note(x, y, text, styles),
-
   boundary: (x, y, w, h, label, theme, styles) =>
     usecaseTemplates.systemBoundary(x, y, w, h, label, styles),
   useCase: (x, y, label, theme, styles) =>
@@ -44,13 +45,11 @@ export const AbdShapes = {
       type === "actor" ? usecaseTemplates.actor(0, 20, label, styles) : null;
     return sequenceTemplates.participant(x, y, label, type, actorSVG, styles);
   },
-
   seqNote: (x, y, w, text, theme, styles) => {
     return sequenceTemplates.note(x, y, w, text, (tx, ty, content) =>
       usecaseTemplates.note(tx, ty, content, styles),
     );
   },
-
   lifeline: (x, topY, bottomY, styles) =>
     sequenceTemplates.lifeline(x, topY, bottomY, styles),
   activationBar: (x, y, height, styles) =>
@@ -97,20 +96,60 @@ export const AbdShapes = {
 
   flowStartStop: (x, y, label, theme) =>
     flowchartTemplates.startstop(x, y, label),
-
   flowProcess: (x, y, label, theme) => flowchartTemplates.process(x, y, label),
-
   flowDecision: (x, y, label, theme) =>
     flowchartTemplates.decision(x, y, label),
-
   flowIO: (x, y, label, theme) => flowchartTemplates.io(x, y, label),
-
   flowLink: (x1, y1, x2, y2, label) =>
     flowchartTemplates.connector(x1, y1, x2, y2, label),
 
   classBox: (x, y, width, struct, theme) =>
     classTemplates.struct(x, y, width, struct, theme),
-
   classConnector: (marker, fromId, toId, positions) =>
     classTemplates.connector(marker, fromId, toId, positions),
+
+  stateBox: (x, y, w, h, label, isComposite, palette) =>
+    stateMachineTemplates.state(x, y, w, h, label, isComposite, palette),
+  pseudoState: (x, y, radius, type, palette) =>
+    stateMachineTemplates.pseudoState(x, y, radius, type, palette),
+  stateTransition: (points, label, palette) =>
+    stateMachineTemplates.transition(points, label, palette),
+  stateNote: (x, y, w, h, text, palette) =>
+    stateMachineTemplates.note(x, y, w, h, text, palette),
+  submachineState: (x, y, w, h, label, palette) =>
+    stateMachineTemplates.submachine(x, y, w, h, label, palette),
+  getStatePoint: (type, cx, cy, size, toX, toY, index, total) =>
+    stateMachineTemplates.getPoint(type, cx, cy, size, toX, toY, index, total),
+  stateDefs: (palette) => stateMachineTemplates.defs(palette),
+
+  erdEntity: (cx, cy, entity, styles) =>
+    erdTemplates.entity(cx, cy, entity, styles),
+  erdRelation: (
+    sx,
+    sy,
+    ex,
+    ey,
+    cardFrom,
+    cardTo,
+    label,
+    dashed,
+    isDiamond,
+    connColor,
+  ) => {
+    if (isDiamond) {
+      return flowchartTemplates.decision((sx + ex) / 2, (sy + ey) / 2, label);
+    }
+    return erdTemplates.relation(
+      sx,
+      sy,
+      ex,
+      ey,
+      cardFrom,
+      cardTo,
+      label,
+      dashed,
+      connColor,
+    );
+  },
+  erdDefs: () => erdTemplates.defs(),
 };

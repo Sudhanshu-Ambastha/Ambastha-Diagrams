@@ -17,13 +17,14 @@
  * limitations under the License.
  */
 
-import { colors } from "./colors.js";
+import { colorThemes, customThemeTemplate } from "./colors.js";
 import { typography } from "./typography.js";
 import { spacing } from "./spacing.js";
 import { measurements } from "./measurements.js";
 
 export const defaultTheme = {
-  colors,
+  colors: colorThemes,
+  customThemeTemplate,
   typography,
   spacing,
   measurements,
